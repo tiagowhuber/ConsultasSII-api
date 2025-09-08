@@ -1,0 +1,13 @@
+import { Request, Response } from 'express';
+export declare const getAllEmpresas: (req: Request, res: Response) => Promise<void>;
+export declare const getEmpresaByRut: (req: Request, res: Response) => Promise<void>;
+export declare const createEmpresa: (req: Request, res: Response) => Promise<void>;
+export declare const getPeriodosByEmpresa: (req: Request, res: Response) => Promise<void>;
+export declare const createPeriodo: (req: Request, res: Response) => Promise<void>;
+export declare const getResumenCompras: (req: Request, res: Response) => Promise<void>;
+export declare const createResumenCompras: (req: Request, res: Response) => Promise<void>;
+export declare const getDetalleCompras: (req: Request, res: Response) => Promise<void>;
+export declare const createDetalleCompras: (req: Request, res: Response) => Promise<void>;
+export declare const getAllProveedores: (req: Request, res: Response) => Promise<void>;
+export declare const createProveedor: (req: Request, res: Response) => Promise<void>;
+export declare const getAllTiposDte: (req: Request, res: Response) => Promise<void>;

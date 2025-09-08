@@ -1,0 +1,27 @@
+export { Empresa } from './Empresa.js';
+export { Periodo } from './Periodo.js';
+export { TipoDte } from './TipoDte.js';
+export { Proveedor } from './Proveedor.js';
+export { ResumenCompras } from './ResumenCompras.js';
+export { DetalleCompras } from './DetalleCompras.js';
+export { OtrosImpuestos } from './OtrosImpuestos.js';
+import sequelize from '../config/db.js';
+import { Empresa } from './Empresa.js';
+import { Periodo } from './Periodo.js';
+import { TipoDte } from './TipoDte.js';
+import { Proveedor } from './Proveedor.js';
+import { ResumenCompras } from './ResumenCompras.js';
+import { DetalleCompras } from './DetalleCompras.js';
+import { OtrosImpuestos } from './OtrosImpuestos.js';
+declare const models: {
+    Empresa: typeof Empresa;
+    Periodo: typeof Periodo;
+    TipoDte: typeof TipoDte;
+    Proveedor: typeof Proveedor;
+    ResumenCompras: typeof ResumenCompras;
+    DetalleCompras: typeof DetalleCompras;
+    OtrosImpuestos: typeof OtrosImpuestos;
+};
+declare const initializeAssociations: () => void;
+export { sequelize, initializeAssociations };
+export default models;

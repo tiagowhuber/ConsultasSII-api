@@ -1,0 +1,38 @@
+import { Model } from 'sequelize-typescript';
+export declare class DetalleCompras extends Model {
+    detalleId: number;
+    periodoId: number;
+    tipoDte: number;
+    tipoCompra: string;
+    rutProveedor: string;
+    folio: string;
+    fechaEmision: Date;
+    fechaRecepcion: Date;
+    acuseRecibo?: string;
+    fechaAcuse?: Date;
+    montoExento: string;
+    montoNeto: string;
+    montoIvaRecuperable: string;
+    montoIvaNoRecuperable: string;
+    codigoIvaNoRecuperable?: number;
+    montoTotal: string;
+    montoNetoActivoFijo: string;
+    ivaActivoFijo: string;
+    ivaUsoComun: string;
+    impuestoSinDerechoCredito: string;
+    ivaNoRetenido: string;
+    tabacosPuros?: string;
+    tabacosCigarrillos?: string;
+    tabacosElaborados?: string;
+    nceNdeFacturaCompra: string;
+    valorOtroImpuesto?: string;
+    tasaOtroImpuesto?: string;
+    codigoOtroImpuesto?: number;
+    estado: 'Confirmada' | 'Pendiente' | 'Rechazada';
+    createdAt: Date;
+    updatedAt: Date;
+    periodo: any;
+    tipoDteInfo: any;
+    proveedor: any;
+    otrosImpuestos: any[];
+}
