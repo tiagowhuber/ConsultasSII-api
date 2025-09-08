@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import express from 'express';
 import dotenv from 'dotenv';
 import dteRoutes from './src/routes/dte.js';
-import { testConnection, syncDatabase } from './src/config/db.js';
+import { testConnection } from './src/config/db.js';
 import './src/models/index.js'; // Initialize models
 
 // Load environment variables
