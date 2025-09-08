@@ -6,7 +6,7 @@ import {
   DataType, 
   CreatedAt, 
   UpdatedAt,
-  HasMany
+  //HasMany
 } from 'sequelize-typescript';
 
 @Table({

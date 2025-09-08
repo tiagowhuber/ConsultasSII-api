@@ -7,9 +7,9 @@ import {
   DataType, 
   CreatedAt, 
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
-  HasMany,
+  //ForeignKey,
+  //BelongsTo,
+  //HasMany,
   Unique
 } from 'sequelize-typescript';
 

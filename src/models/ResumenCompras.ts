@@ -7,9 +7,9 @@ import {
   DataType, 
   CreatedAt, 
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
-  Unique
+  //ForeignKey,
+  //BelongsTo,
+  //Unique
 } from 'sequelize-typescript';
 
 @Table({

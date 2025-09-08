@@ -4,8 +4,8 @@ import {
   Model, 
   PrimaryKey, 
   DataType,
-  CreatedAt, 
-  UpdatedAt
+  //CreatedAt, 
+  //UpdatedAt
 } from 'sequelize-typescript';
 
 @Table({
