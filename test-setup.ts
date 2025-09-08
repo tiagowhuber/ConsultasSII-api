@@ -7,17 +7,17 @@ dotenv.config();
 
 async function testSetup() {
   try {
-    console.log('🔧 Testing Sequelize setup...');
+    console.log(' Testing Sequelize setup...');
     
     // Test connection
     await testConnection();
     
     // Test model queries
-    console.log('📊 Testing models...');
+    console.log(' Testing models...');
     
     // Test TipoDte (should have pre-populated data)
     const tiposDte = await TipoDte.findAll({ limit: 3 });
-    console.log(`✅ Found ${tiposDte.length} DTE types`);
+    console.log(` Found ${tiposDte.length} DTE types`);
     
     // Test Empresa creation (if not exists)
     const [empresa] = await Empresa.findOrCreate({
@@ -29,7 +29,7 @@ async function testSetup() {
         email: 'test@empresa.cl'
       }
     });
-    console.log(`✅ Empresa: ${empresa.nombreEmpresa}`);
+    console.log(` Empresa: ${empresa.nombreEmpresa}`);
     
     // Test Periodo creation
     const [periodo] = await Periodo.findOrCreate({
@@ -45,12 +45,12 @@ async function testSetup() {
         nombreMes: 'Septiembre'
       }
     });
-    console.log(`✅ Período: ${periodo.nombreMes} ${periodo.anio}`);
+    console.log(` Período: ${periodo.nombreMes} ${periodo.anio}`);
     
-    console.log('🎉 All tests passed! Sequelize setup is working correctly.');
+    console.log(' All tests passed! Sequelize setup is working correctly.');
     
   } catch (error) {
-    console.error('❌ Test failed:', error);
+    console.error(' Test failed:', error);
     process.exit(1);
   } finally {
     process.exit(0);

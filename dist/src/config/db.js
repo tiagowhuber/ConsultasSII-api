@@ -21,27 +21,27 @@ const sequelize = new Sequelize({
 });
 export const testConnection = async () => {
     try {
-        console.log('🔧 Attempting Sequelize connection to:', {
+        console.log(' Attempting Sequelize connection to:', {
             host: process.env.PGHOST || 'localhost',
             port: Number(process.env.PGPORT) || 5431,
             database: process.env.PGDATABASE || 'postgres',
             user: process.env.PGUSER
         });
         await sequelize.authenticate();
-        console.log('✓ Sequelize: PostgreSQL connection OK');
+        console.log(' Sequelize: PostgreSQL connection OK');
     }
     catch (error) {
-        console.error('✗ Unable to connect to the database:', error);
+        console.error(' Unable to connect to the database:', error);
         throw error;
     }
 };
 export const syncDatabase = async (force = false) => {
     try {
         await sequelize.sync({ force });
-        console.log('✓ Database synchronized successfully');
+        console.log(' Database synchronized successfully');
     }
     catch (error) {
-        console.error('✗ Error synchronizing database:', error);
+        console.error(' Error synchronizing database:', error);
         throw error;
     }
 };

@@ -26,16 +26,16 @@ const start = async () => {
     // await syncDatabase(process.env.NODE_ENV !== 'production');
     
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 DTE API ready with Sequelize`);
-      console.log(`📋 Available endpoints:`);
+      console.log(` Server running on port ${PORT}`);
+      console.log(` DTE API ready with Sequelize`);
+      console.log(` Available endpoints:`);
       console.log(`   GET  /api/dte/empresas`);
       console.log(`   GET  /api/dte/tipos-dte`);
       console.log(`   GET  /facturas (legacy)`);
     });
   } catch (err) {
-    console.error('❌ Failed to start server:', err);
-    console.log('💡 Make sure PostgreSQL is running on port', process.env.PGPORT);
+    console.error(' Failed to start server:', err);
+    console.log(' Make sure PostgreSQL is running on port', process.env.PGPORT);
     process.exit(1);
   }
 };

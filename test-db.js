@@ -7,7 +7,7 @@ dotenv.config();
 
 async function testDatabaseConnection() {
   try {
-    console.log('🔧 Testing database connection...');
+    console.log(' Testing database connection...');
     
     // Create Sequelize instance
     const sequelize = new Sequelize({
@@ -22,17 +22,17 @@ async function testDatabaseConnection() {
 
     // Test connection
     await sequelize.authenticate();
-    console.log('✅ Database connection successful');
+    console.log(' Database connection successful');
 
     // Check if dte schema exists
     const [schemas] = await sequelize.query("SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'dte'");
     
     if (schemas.length === 0) {
-      console.log('⚠️  DTE schema not found. Creating it...');
+      console.log('️  DTE schema not found. Creating it...');
       await sequelize.query('CREATE SCHEMA IF NOT EXISTS dte');
-      console.log('✅ DTE schema created');
+      console.log(' DTE schema created');
     } else {
-      console.log('✅ DTE schema exists');
+      console.log(' DTE schema exists');
     }
 
     // Check if tables exist
@@ -44,10 +44,10 @@ async function testDatabaseConnection() {
     `);
     
     if (tables.length === 0) {
-      console.log('⚠️  No DTE tables found. You need to run the schema.pgsql file first:');
+      console.log('️  No DTE tables found. You need to run the schema.pgsql file first:');
       console.log('   psql -h localhost -p 5431 -U postgres -d postgres -f database/schema.pgsql');
     } else {
-      console.log(`✅ Found ${tables.length} DTE tables:`);
+      console.log(` Found ${tables.length} DTE tables:`);
       tables.forEach((table, index) => {
         console.log(`   ${index + 1}. dte.${table.table_name}`);
       });
@@ -55,17 +55,17 @@ async function testDatabaseConnection() {
 
     // Close connection
     await sequelize.close();
-    console.log('🎉 Database test completed successfully');
+    console.log(' Database test completed successfully');
     
   } catch (error) {
-    console.error('❌ Database test failed:', error.message);
+    console.error(' Database test failed:', error.message);
     
     if (error.code === 'ECONNREFUSED') {
-      console.log('💡 Make sure PostgreSQL is running on port', process.env.PGPORT || 5432);
+      console.log(' Make sure PostgreSQL is running on port', process.env.PGPORT || 5432);
     } else if (error.code === '28P01') {
-      console.log('💡 Authentication failed. Check your username and password in .env');
+      console.log(' Authentication failed. Check your username and password in .env');
     } else if (error.code === '3D000') {
-      console.log('💡 Database does not exist. Create it first:');
+      console.log(' Database does not exist. Create it first:');
       console.log('   createdb -h localhost -p 5431 -U postgres consultassii');
     }
     

@@ -176,10 +176,10 @@ POST /api/dte/detalle-compras
 
 Successful startup shows:
 ```
-✓ Sequelize: PostgreSQL connection OK
-✓ Database synchronized successfully  
-🚀 Server running on port 3000
-📊 DTE Schema ready with Sequelize models
+ Sequelize: PostgreSQL connection OK
+ Database synchronized successfully  
+ Server running on port 3000
+ DTE Schema ready with Sequelize models
 ```
 
 ## Troubleshooting
@@ -209,10 +209,10 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dte TO consultassii_user;
 
 ## Chilean DTE Integration
 This schema supports:
-- ✅ SII Libro de Compras format
-- ✅ Multiple DTE types (33, 34, 39, 41, etc.)
-- ✅ Tax calculations (IVA recuperable/no recuperable)
-- ✅ Supplier management
-- ✅ Period-based reporting
+-  SII Libro de Compras format
+-  Multiple DTE types (33, 34, 39, 41, etc.)
+-  Tax calculations (IVA recuperable/no recuperable)
+-  Supplier management
+-  Period-based reporting
 - 🔄 Future: SII API integration
 - 🔄 Future: XML DTE parsing

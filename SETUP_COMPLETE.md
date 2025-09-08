@@ -1,8 +1,8 @@
-## 🎉 **Sequelize Setup Complete!**
+##  **Sequelize Setup Complete!**
 
 Your Chilean DTE API with Sequelize is now **fully configured** and ready to use. Here's what has been implemented:
 
-### ✅ **What's Working**
+###  **What's Working**
 
 1. **Complete Sequelize Models** 
    - All 7 DTE models created with proper TypeScript types
@@ -36,7 +36,7 @@ Your Chilean DTE API with Sequelize is now **fully configured** and ready to use
    - TypeScript type safety
    - Chilean peso BIGINT handling
 
-### 🔧 **Current Status**
+###  **Current Status**
 
 The application is **ready to run** but waiting for:
 
@@ -45,7 +45,7 @@ The application is **ready to run** but waiting for:
 - The DTE schema is already created (verified working)
 - Connection string: `postgres://postgres:awanteffstudios@localhost:5431/postgres`
 
-### 🚀 **To Test The Setup**
+###  **To Test The Setup**
 
 1. **Start PostgreSQL** (if not running):
    ```bash
@@ -60,9 +60,9 @@ The application is **ready to run** but waiting for:
    ```
    You should see:
    ```
-   ✓ Sequelize: PostgreSQL connection OK
-   🚀 Server running on port 3000
-   📊 DTE API ready with Sequelize
+    Sequelize: PostgreSQL connection OK
+    Server running on port 3000
+    DTE API ready with Sequelize
    ```
 
 3. **Test Endpoints**:
@@ -101,11 +101,11 @@ src/
 
 ### 🎯 **Ready For Production**
 
-- ✅ Type-safe models with validation
-- ✅ Proper associations and relationships  
-- ✅ Error handling and logging
-- ✅ Environment configuration
-- ✅ Chilean DTE compliance
-- ✅ Scalable architecture
+-  Type-safe models with validation
+-  Proper associations and relationships  
+-  Error handling and logging
+-  Environment configuration
+-  Chilean DTE compliance
+-  Scalable architecture
 
-**The setup is complete!** Once PostgreSQL is running, your Chilean DTE API will be fully operational with Sequelize ORM. 🚀
+**The setup is complete!** Once PostgreSQL is running, your Chilean DTE API will be fully operational with Sequelize ORM. 
