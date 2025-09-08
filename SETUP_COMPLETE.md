@@ -93,10 +93,8 @@ src/
 │   └── OtrosImpuestos.ts  # Additional taxes model
 ├── controllers/
 │   ├── Dte.controller.ts  # DTE operations
-│   └── Facturas.controller.ts # Legacy controller
 └── routes/
     ├── dte.ts             # DTE routes
-    └── facturas.ts        # Legacy routes
 ```
 
 ### 🎯 **Ready For Production**

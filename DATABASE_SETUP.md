@@ -89,12 +89,6 @@ npm start
 #### Tipos de DTE (Document Types)
 - `GET /api/dte/tipos-dte` - Get all DTE types
 
-### Legacy Endpoints
-- `GET /facturas` - Get all facturas (legacy)
-- `GET /facturas/:id` - Get factura by ID (legacy)
-- `POST /facturas` - Create new factura (legacy)
-- `PUT /facturas/:id` - Update factura (legacy)
-- `DELETE /facturas/:id` - Delete factura (legacy)
 
 ## Database Schema (DTE)
 

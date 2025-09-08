@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import express from 'express';
 import dotenv from 'dotenv';
-import facturasRoutes from './src/routes/facturas.js';
 import dteRoutes from './src/routes/dte.js';
 import { testConnection, syncDatabase } from './src/config/db.js';
 import './src/models/index.js'; // Initialize models
@@ -13,7 +12,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/facturas', facturasRoutes);
 app.use('/api/dte', dteRoutes);
 
 const start = async () => {
@@ -31,7 +29,6 @@ const start = async () => {
       console.log(` Available endpoints:`);
       console.log(`   GET  /api/dte/empresas`);
       console.log(`   GET  /api/dte/tipos-dte`);
-      console.log(`   GET  /facturas (legacy)`);
     });
   } catch (err) {
     console.error(' Failed to start server:', err);
