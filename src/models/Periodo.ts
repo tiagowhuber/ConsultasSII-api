@@ -29,6 +29,7 @@ export class Periodo extends Model {
   })
   periodoId!: number;
 
+  @Unique('unique_rut_periodo')
   @Column({
     type: DataType.STRING(12),
     field: 'rut_empresa',

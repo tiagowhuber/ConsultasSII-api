@@ -123,12 +123,12 @@ CREATE TABLE IF NOT EXISTS dte.detalle_compras (
 -- Other taxes detail (normalized from the otrosImpuestos array)
 CREATE TABLE IF NOT EXISTS dte.otros_impuestos (
     impuesto_id SERIAL PRIMARY KEY,
-    detalle_id INTEGER NOT NULL,
+    detalle_id INTEGER NULL,
     codigo INTEGER NOT NULL,
     valor BIGINT NOT NULL,
     tasa DECIMAL(5,2) NOT NULL, -- Tax rate as percentage
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_otros_impuestos_detalle FOREIGN KEY (detalle_id) REFERENCES dte.detalle_compras (detalle_id) ON DELETE CASCADE
+    CONSTRAINT fk_otros_impuestos_detalle FOREIGN KEY (detalle_id) REFERENCES dte.detalle_compras (detalle_id) ON DELETE SET NULL
 );
 
 -- Sales summaries (structure ready for when sales data is available)

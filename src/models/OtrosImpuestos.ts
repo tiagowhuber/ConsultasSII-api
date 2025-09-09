@@ -26,9 +26,9 @@ export class OtrosImpuestos extends Model {
   @Column({
     type: DataType.INTEGER,
     field: 'detalle_id',
-    allowNull: false
+    allowNull: true
   })
-  detalleId!: number;
+  detalleId?: number | null;
 
   @Column({
     type: DataType.INTEGER,
