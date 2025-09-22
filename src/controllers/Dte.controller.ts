@@ -51,15 +51,6 @@ export const getEmpresaByRut = async (req: Request, res: Response): Promise<void
   }
 };
 
-export const createEmpresa = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const empresa = await Empresa.create(req.body);
-    res.status(201).json(empresa);
-  } catch (error) {
-    console.error('Error creating empresa:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
 
 // Periodo Controllers
 export const getPeriodosByEmpresa = async (req: Request, res: Response): Promise<void> => {
@@ -92,16 +83,6 @@ export const getPeriodosByEmpresa = async (req: Request, res: Response): Promise
   }
 };
 
-export const createPeriodo = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const periodo = await Periodo.create(req.body);
-    res.status(201).json(periodo);
-  } catch (error) {
-    console.error('Error creating periodo:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
-
 // Resumen Compras Controllers
 export const getResumenCompras = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -123,16 +104,6 @@ export const getResumenCompras = async (req: Request, res: Response): Promise<vo
     res.json(resumen);
   } catch (error) {
     console.error('Error fetching resumen compras:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
-
-export const createResumenCompras = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const resumen = await ResumenCompras.create(req.body);
-    res.status(201).json(resumen);
-  } catch (error) {
-    console.error('Error creating resumen compras:', error);
     res.status(500).json({ error: 'Database error' });
   }
 };
@@ -188,37 +159,6 @@ export const getDetalleCompras = async (req: Request, res: Response): Promise<vo
   }
 };
 
-export const createDetalleCompras = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { otrosImpuestos, ...detalleData } = req.body;
-    
-    const detalle = await DetalleCompras.create(detalleData);
-    
-    // Create related otros_impuestos if provided
-    if (otrosImpuestos && Array.isArray(otrosImpuestos) && otrosImpuestos.length > 0) {
-      const impuestosData = otrosImpuestos.map((impuesto: any) => ({
-        ...impuesto,
-        detalleId: detalle.detalleId
-      }));
-      await OtrosImpuestos.bulkCreate(impuestosData);
-    }
-    
-    // Fetch the created record with all associations
-    const createdDetalle = await DetalleCompras.findByPk(detalle.detalleId, {
-      include: [
-        { model: Periodo, as: 'periodo' },
-        { model: TipoDte, as: 'tipoDteInfo' },
-        { model: Proveedor, as: 'proveedor' },
-        { model: OtrosImpuestos, as: 'otrosImpuestos' }
-      ]
-    });
-    
-    res.status(201).json(createdDetalle);
-  } catch (error) {
-    console.error('Error creating detalle compras:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
 
 // Proveedor Controllers
 export const getAllProveedores = async (req: Request, res: Response): Promise<void> => {
@@ -242,16 +182,6 @@ export const getAllProveedores = async (req: Request, res: Response): Promise<vo
     res.json(proveedores);
   } catch (error) {
     console.error('Error fetching proveedores:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
-
-export const createProveedor = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const proveedor = await Proveedor.create(req.body);
-    res.status(201).json(proveedor);
-  } catch (error) {
-    console.error('Error creating proveedor:', error);
     res.status(500).json({ error: 'Database error' });
   }
 };
