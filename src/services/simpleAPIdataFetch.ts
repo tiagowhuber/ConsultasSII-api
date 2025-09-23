@@ -559,10 +559,10 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
 
     // 2. Create or update periodo
     let periodo: any;
-    let created = false;
+    let _created = false;
     
     try {
-      [periodo, created] = await Periodo.findOrCreate({
+      [periodo, _created] = await Periodo.findOrCreate({
         where: {
           rutEmpresa: caratula.rutEmpresa,
           periodo: caratula.periodo
@@ -597,16 +597,14 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
           nombreMes: caratula.nombreMes,
           dia: caratula.dia
         }, { transaction });
-        created = true;
+        _created = true;
       }
     }
 
     // Get the periodo ID, handling different ways Sequelize might return it
     const periodoId = periodo?.periodoId || periodo?.dataValues?.periodo_id || periodo?.get?.('periodoId');
     
-    console.log(`Periodo ${created ? 'created' : 'found'}: ID ${periodoId} for period ${caratula.periodo}`);
-    console.log(`Periodo object keys:`, Object.keys(periodo || {}));
-    console.log(`Periodo dataValues:`, periodo?.dataValues);
+    // Periodo created or found successfully
 
     // Ensure we have a valid periodo ID
     if (!periodo || !periodoId) {

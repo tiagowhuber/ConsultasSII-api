@@ -1,6 +1,7 @@
 {
   "name": "constultassiiapi",
   "version": "1.0.0",
+  "description": "API backend for SII (Chilean Tax Authority) purchase data consultation system",
   "main": "dist/app.js",
   "type": "module",
   "scripts": {
@@ -10,7 +11,7 @@
     "clean": "if exist dist rmdir /s /q dist",
     "build:clean": "npm run clean && npm run build"
   },
-  "keywords": [],
+  "keywords": ["sii", "chile", "tax", "api", "purchase-data"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -42,6 +43,5 @@
   "bugs": {
     "url": "https://github.com/tiagowhuber/ConsultasSII-api/issues"
   },
-  "homepage": "https://github.com/tiagowhuber/ConsultasSII-api#readme",
-  "description": ""
+  "homepage": "https://github.com/tiagowhuber/ConsultasSII-api#readme"
 }

@@ -42,8 +42,7 @@ const start = async () => {
       console.log(` Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error(' Failed to start server:', err);
-    console.log(' Make sure PostgreSQL is running on port', process.env.PGPORT);
+    console.error('Failed to start server:', err);
     process.exit(1);
   }
 };
