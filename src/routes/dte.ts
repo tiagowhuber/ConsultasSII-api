@@ -34,6 +34,6 @@ router.get('/proveedores', getAllProveedores);
 router.get('/tipos-dte', getAllTiposDte);
 
 // Comment routes
-router.patch('/detalle-compras/:detalleId/comment', updateDetalleCompraComment);
+router.put('/detalle-compras/:detalleId/comment', updateDetalleCompraComment);
 
 export default router;
