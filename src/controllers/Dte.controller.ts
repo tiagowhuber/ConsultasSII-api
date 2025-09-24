@@ -198,3 +198,29 @@ export const getAllTiposDte = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ error: 'Database error' });
   }
 };
+
+// Comment Controllers
+export const updateDetalleCompraComment = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { detalleId } = req.params;
+    const { comentario } = req.body;
+    
+    const detalleCompra = await DetalleCompras.findByPk(detalleId);
+    
+    if (!detalleCompra) {
+      res.status(404).json({ error: 'Detalle compra not found' });
+      return;
+    }
+    
+    await detalleCompra.update({ comentario });
+    
+    res.json({ 
+      message: 'Comment updated successfully',
+      detalleId: detalleId,
+      comentario: comentario
+    });
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    res.status(500).json({ error: 'Database error' });
+  }
+};

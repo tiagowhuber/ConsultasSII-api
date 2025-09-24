@@ -39,6 +39,7 @@ export interface DetalleCompra {
   valorOtroImpuesto: string;
   tasaOtroImpuesto: string;
   codigoOtroImpuesto: number;
+  comentario?: string;
   estado: string;
   fechaAcuse: string | null;
   otrosImpuestos?: OtroImpuesto[];

@@ -110,6 +110,9 @@ CREATE TABLE IF NOT EXISTS dte.detalle_compras (
     tasa_otro_impuesto VARCHAR(10),
     codigo_otro_impuesto INTEGER DEFAULT 0,
     
+    -- Comment field for additional notes
+    comentario TEXT,
+    
     estado VARCHAR(20) NOT NULL CHECK (estado IN ('Confirmada', 'Pendiente', 'Rechazada')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

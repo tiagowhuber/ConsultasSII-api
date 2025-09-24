@@ -224,6 +224,12 @@ export class DetalleCompras extends Model {
   })
   codigoOtroImpuesto?: number;
 
+  // Comment field
+  @Column({
+    type: DataType.TEXT
+  })
+  comentario?: string;
+
   @Column({
     type: DataType.ENUM('Confirmada', 'Pendiente', 'Rechazada'),
     allowNull: false
