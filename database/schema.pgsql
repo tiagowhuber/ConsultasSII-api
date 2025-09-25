@@ -113,6 +113,9 @@ CREATE TABLE IF NOT EXISTS dte.detalle_compras (
     -- Comment field for additional notes
     comentario TEXT,
     
+    -- Accounting status
+    contabilizado BOOLEAN NOT NULL DEFAULT FALSE,
+    
     estado VARCHAR(20) NOT NULL CHECK (estado IN ('Confirmada', 'Pendiente', 'Rechazada')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

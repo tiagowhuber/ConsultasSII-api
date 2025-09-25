@@ -230,6 +230,14 @@ export class DetalleCompras extends Model {
   })
   comentario?: string;
 
+  // Accounting status
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  })
+  contabilizado!: boolean;
+
   @Column({
     type: DataType.ENUM('Confirmada', 'Pendiente', 'Rechazada'),
     allowNull: false

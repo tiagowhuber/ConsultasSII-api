@@ -16,9 +16,11 @@ const PORT = process.env.PORT || 3000;
 // CORS configuration
 app.use(cors({
   origin: [
-    'http://localhost:5173', // Vite dev server
+    'http://localhost:5173', // Vite dev server default
+    'http://localhost:5174', // Vite dev server alternative port
     'http://localhost:3000', // Same origin
     'http://127.0.0.1:5173', // Alternative localhost
+    'http://127.0.0.1:5174', // Alternative localhost alternative port
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

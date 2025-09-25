@@ -224,3 +224,35 @@ export const updateDetalleCompraComment = async (req: Request, res: Response): P
     res.status(500).json({ error: 'Database error' });
   }
 };
+
+// Contabilizado Controllers
+export const updateDetalleCompraContabilizado = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { detalleId } = req.params;
+    const { contabilizado } = req.body;
+    
+    // Validate the contabilizado value
+    if (typeof contabilizado !== 'boolean') {
+      res.status(400).json({ error: 'contabilizado must be a boolean value' });
+      return;
+    }
+    
+    const detalleCompra = await DetalleCompras.findByPk(detalleId);
+    
+    if (!detalleCompra) {
+      res.status(404).json({ error: 'Detalle compra not found' });
+      return;
+    }
+    
+    await detalleCompra.update({ contabilizado });
+    
+    res.json({ 
+      message: 'Contabilizado status updated successfully',
+      detalleId: detalleId,
+      contabilizado: contabilizado
+    });
+  } catch (error) {
+    console.error('Error updating contabilizado status:', error);
+    res.status(500).json({ error: 'Database error' });
+  }
+};
