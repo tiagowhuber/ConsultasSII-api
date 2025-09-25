@@ -23,39 +23,39 @@ export class Notas extends Model {
     type: DataType.INTEGER,
     field: 'nota_id'
   })
-  notaId!: number;
+  declare notaId: number;
 
   @Column({
     type: DataType.STRING(12),
     field: 'rut_proveedor',
     allowNull: false
   })
-  rutProveedor!: string;
+  declare rutProveedor: string;
 
   @Column({
     type: DataType.BIGINT,
     allowNull: false
   })
-  folio!: string;
+  declare folio: string;
 
   @Column({
     type: DataType.INTEGER,
     field: 'tipo_dte',
     allowNull: false
   })
-  tipoDte!: number;
+  declare tipoDte: number;
 
   @Column({
     type: DataType.TEXT
   })
-  comentario?: string;
+  declare comentario?: string;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
     defaultValue: false
   })
-  contabilizado!: boolean;
+  declare contabilizado: boolean;
 
   @CreatedAt
   @Column({
@@ -70,5 +70,5 @@ export class Notas extends Model {
   declare updatedAt: Date;
 
   // Associations will be defined separately
-  detalleCompra!: any;
+  declare detalleCompra: any;
 }

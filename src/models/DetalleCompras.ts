@@ -23,21 +23,21 @@ export class DetalleCompras extends Model {
     type: DataType.INTEGER,
     field: 'detalle_id'
   })
-  detalleId!: number;
+  declare detalleId: number;
 
   @Column({
     type: DataType.INTEGER,
     field: 'periodo_id',
     allowNull: false
   })
-  periodoId!: number;
+  declare periodoId: number;
 
   @Column({
     type: DataType.INTEGER,
     field: 'tipo_dte',
     allowNull: false
   })
-  tipoDte!: number;
+  declare tipoDte: number;
 
   @Column({
     type: DataType.STRING(50),
@@ -45,46 +45,46 @@ export class DetalleCompras extends Model {
     defaultValue: 'Del Giro',
     allowNull: false
   })
-  tipoCompra!: string;
+  declare tipoCompra: string;
 
   @Column({
     type: DataType.STRING(12),
     field: 'rut_proveedor',
     allowNull: false
   })
-  rutProveedor!: string;
+  declare rutProveedor: string;
 
   @Column({
     type: DataType.BIGINT,
     allowNull: false
   })
-  folio!: string;
+  declare folio: string;
 
   @Column({
     type: DataType.DATEONLY,
     field: 'fecha_emision',
     allowNull: false
   })
-  fechaEmision!: Date;
+  declare fechaEmision: Date;
 
   @Column({
     type: DataType.DATE,
     field: 'fecha_recepcion',
     allowNull: false
   })
-  fechaRecepcion!: Date;
+  declare fechaRecepcion: Date;
 
   @Column({
     type: DataType.STRING(50),
     field: 'acuse_recibo'
   })
-  acuseRecibo?: string;
+  declare acuseRecibo?: string;
 
   @Column({
     type: DataType.DATE,
     field: 'fecha_acuse'
   })
-  fechaAcuse?: Date;
+  declare fechaAcuse?: Date;
 
   // Amounts (in Chilean pesos as strings to handle BIGINT)
   @Column({
@@ -93,7 +93,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  montoExento!: string;
+  declare montoExento: string;
 
   @Column({
     type: DataType.BIGINT,
@@ -101,7 +101,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  montoNeto!: string;
+  declare montoNeto: string;
 
   @Column({
     type: DataType.BIGINT,
@@ -109,7 +109,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  montoIvaRecuperable!: string;
+  declare montoIvaRecuperable: string;
 
   @Column({
     type: DataType.BIGINT,
@@ -117,14 +117,14 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  montoIvaNoRecuperable!: string;
+  declare montoIvaNoRecuperable: string;
 
   @Column({
     type: DataType.INTEGER,
     field: 'codigo_iva_no_recuperable',
     defaultValue: 0
   })
-  codigoIvaNoRecuperable?: number;
+  declare codigoIvaNoRecuperable?: number;
 
   @Column({
     type: DataType.BIGINT,
@@ -132,7 +132,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  montoTotal!: string;
+  declare montoTotal: string;
 
   // Fixed asset amounts
   @Column({
@@ -141,7 +141,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  montoNetoActivoFijo!: string;
+  declare montoNetoActivoFijo: string;
 
   @Column({
     type: DataType.BIGINT,
@@ -149,7 +149,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  ivaActivoFijo!: string;
+  declare ivaActivoFijo: string;
 
   @Column({
     type: DataType.BIGINT,
@@ -157,7 +157,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  ivaUsoComun!: string;
+  declare ivaUsoComun: string;
 
   // Additional tax information
   @Column({
@@ -166,7 +166,7 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  impuestoSinDerechoCredito!: string;
+  declare impuestoSinDerechoCredito: string;
 
   @Column({
     type: DataType.BIGINT,
@@ -174,26 +174,26 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  ivaNoRetenido!: string;
+  declare ivaNoRetenido: string;
 
   // Tobacco taxes
   @Column({
     type: DataType.BIGINT,
     field: 'tabacos_puros'
   })
-  tabacosPuros?: string;
+  declare tabacosPuros?: string;
 
   @Column({
     type: DataType.BIGINT,
     field: 'tabacos_cigarrillos'
   })
-  tabacosCigarrillos?: string;
+  declare tabacosCigarrillos?: string;
 
   @Column({
     type: DataType.BIGINT,
     field: 'tabacos_elaborados'
   })
-  tabacosElaborados?: string;
+  declare tabacosElaborados?: string;
 
   // Credit/debit notes
   @Column({
@@ -202,33 +202,33 @@ export class DetalleCompras extends Model {
     defaultValue: 0,
     allowNull: false
   })
-  nceNdeFacturaCompra!: string;
+  declare nceNdeFacturaCompra: string;
 
   // Other taxes (legacy fields)
   @Column({
     type: DataType.STRING(20),
     field: 'valor_otro_impuesto'
   })
-  valorOtroImpuesto?: string;
+  declare valorOtroImpuesto?: string;
 
   @Column({
     type: DataType.STRING(10),
     field: 'tasa_otro_impuesto'
   })
-  tasaOtroImpuesto?: string;
+  declare tasaOtroImpuesto?: string;
 
   @Column({
     type: DataType.INTEGER,
     field: 'codigo_otro_impuesto',
     defaultValue: 0
   })
-  codigoOtroImpuesto?: number;
+  declare codigoOtroImpuesto?: number;
 
   @Column({
     type: DataType.ENUM('Confirmada', 'Pendiente', 'Rechazada'),
     allowNull: false
   })
-  estado!: 'Confirmada' | 'Pendiente' | 'Rechazada';
+  declare estado: 'Confirmada' | 'Pendiente' | 'Rechazada';
 
   @CreatedAt
   @Column({

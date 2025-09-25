@@ -11,19 +11,40 @@ export const getAllNotas = async (req: Request, res: Response): Promise<void> =>
     // Manually fetch related DetalleCompras for each nota
     const notasWithDetails = await Promise.all(
       notas.map(async (nota) => {
-        const detalleCompra = await DetalleCompras.findOne({
-          where: {
-            rutProveedor: nota.rutProveedor,
-            folio: nota.folio,
-            tipoDte: nota.tipoDte
-          },
-          attributes: ['detalleId', 'folio', 'rutProveedor', 'tipoDte', 'fechaEmision', 'montoTotal']
-        });
-        
-        return {
-          ...nota.toJSON(),
-          detalleCompra: detalleCompra ? detalleCompra.toJSON() : null
-        };
+        try {
+          // Validate that the nota has all required composite key values
+          if (!nota.rutProveedor || !nota.folio || !nota.tipoDte) {
+            console.warn(`Nota ${nota.notaId} has missing composite key values:`, {
+              rutProveedor: nota.rutProveedor,
+              folio: nota.folio,
+              tipoDte: nota.tipoDte
+            });
+            return {
+              ...nota.toJSON(),
+              detalleCompra: null
+            };
+          }
+
+          const detalleCompra = await DetalleCompras.findOne({
+            where: {
+              rutProveedor: nota.rutProveedor,
+              folio: nota.folio,
+              tipoDte: nota.tipoDte
+            },
+            attributes: ['detalleId', 'folio', 'rutProveedor', 'tipoDte', 'fechaEmision', 'montoTotal']
+          });
+          
+          return {
+            ...nota.toJSON(),
+            detalleCompra: detalleCompra ? detalleCompra.toJSON() : null
+          };
+        } catch (error) {
+          console.error(`Error fetching detalleCompra for nota ${nota.notaId}:`, error);
+          return {
+            ...nota.toJSON(),
+            detalleCompra: null
+          };
+        }
       })
     );
     
@@ -39,11 +60,30 @@ export const getNotaByCompositeKey = async (req: Request, res: Response): Promis
   try {
     const { rutProveedor, folio, tipoDte } = req.params;
     
+    // Validate required parameters
+    if (!rutProveedor || !folio || !tipoDte) {
+      res.status(400).json({ 
+        error: 'Missing required parameters', 
+        details: { rutProveedor, folio, tipoDte } 
+      });
+      return;
+    }
+    
+    // Validate tipoDte is a valid number
+    const tipoDteNum = parseInt(tipoDte);
+    if (isNaN(tipoDteNum)) {
+      res.status(400).json({ 
+        error: 'Invalid tipoDte parameter', 
+        details: { tipoDte } 
+      });
+      return;
+    }
+    
     const nota = await Notas.findOne({
       where: { 
         rutProveedor,
         folio,
-        tipoDte: parseInt(tipoDte)
+        tipoDte: tipoDteNum
       }
     });
     
@@ -53,19 +93,28 @@ export const getNotaByCompositeKey = async (req: Request, res: Response): Promis
     }
     
     // Manually fetch related DetalleCompras
-    const detalleCompra = await DetalleCompras.findOne({
-      where: {
-        rutProveedor: nota.rutProveedor,
-        folio: nota.folio,
-        tipoDte: nota.tipoDte
-      },
-      attributes: ['detalleId', 'folio', 'rutProveedor', 'tipoDte', 'fechaEmision', 'montoTotal']
-    });
-    
-    res.json({
-      ...nota.toJSON(),
-      detalleCompra: detalleCompra ? detalleCompra.toJSON() : null
-    });
+    try {
+      const detalleCompra = await DetalleCompras.findOne({
+        where: {
+          rutProveedor: nota.rutProveedor,
+          folio: nota.folio,
+          tipoDte: nota.tipoDte
+        },
+        attributes: ['detalleId', 'folio', 'rutProveedor', 'tipoDte', 'fechaEmision', 'montoTotal']
+      });
+      
+      res.json({
+        ...nota.toJSON(),
+        detalleCompra: detalleCompra ? detalleCompra.toJSON() : null
+      });
+    } catch (detalleError) {
+      console.error('Error fetching related DetalleCompras:', detalleError);
+      // Still return the nota even if we can't fetch the related detalleCompra
+      res.json({
+        ...nota.toJSON(),
+        detalleCompra: null
+      });
+    }
   } catch (error) {
     console.error('Error fetching nota:', error);
     res.status(500).json({ error: 'Database error' });
