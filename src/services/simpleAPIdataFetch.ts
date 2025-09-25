@@ -10,7 +10,7 @@ import {
   OtrosImpuestos,
   sequelize 
 } from '../models/index.js';
-import { Transaction } from 'sequelize';
+import { Transaction, QueryTypes } from 'sequelize';
 
 // Create axios instance
 const api = axios.create({
@@ -673,13 +673,26 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
       }, { transaction });
     }
 
-    // 7. Clear existing detalles for this period to avoid duplicates
+    // 7. Store existing notas before clearing detalle_compras
+    const existingNotas = await sequelize.query(`
+      SELECT folio, comentario, contabilizado 
+      FROM dte.notas 
+      WHERE folio IN (
+        SELECT folio FROM dte.detalle_compras WHERE periodo_id = :periodoId
+      )
+    `, {
+      replacements: { periodoId: finalPeriodoId },
+      type: QueryTypes.SELECT,
+      transaction
+    }) as Array<{ folio: string; comentario: string | null; contabilizado: boolean }>;
+
+    // 8. Clear existing detalles for this period to avoid duplicates
     await DetalleCompras.destroy({
       where: { periodoId: finalPeriodoId },
       transaction
     });
 
-    // 8. Insert detalle de compras
+    // 9. Insert detalle de compras
     for (const detalle of compras.detalleCompras) {
       const detalleCompra = await DetalleCompras.create({
         periodoId: finalPeriodoId,
@@ -722,6 +735,34 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
             codigo: otroImpuesto.codigo
           }, { transaction });
         }
+      }
+    }
+
+    // 10. Restore existing notas that still have matching folios
+    for (const nota of existingNotas) {
+      // Check if the folio exists in the newly inserted detalle_compras
+      const detalleExists = await DetalleCompras.findOne({
+        where: { folio: nota.folio },
+        transaction
+      });
+      
+      if (detalleExists) {
+        // Restore the nota
+        await sequelize.query(`
+          INSERT INTO dte.notas (folio, comentario, contabilizado, created_at, updated_at)
+          VALUES (:folio, :comentario, :contabilizado, NOW(), NOW())
+          ON CONFLICT (folio) DO UPDATE SET
+            comentario = EXCLUDED.comentario,
+            contabilizado = EXCLUDED.contabilizado,
+            updated_at = NOW()
+        `, {
+          replacements: {
+            folio: nota.folio,
+            comentario: nota.comentario,
+            contabilizado: nota.contabilizado
+          },
+          transaction
+        });
       }
     }
 
