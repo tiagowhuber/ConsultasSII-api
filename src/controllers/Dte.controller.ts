@@ -148,18 +148,39 @@ export const getDetalleCompras = async (req: Request, res: Response): Promise<vo
     // Manually fetch notas for each detalle using composite key
     const detallesWithNotas = await Promise.all(
       rows.map(async (detalle) => {
-        const nota = await Notas.findOne({
-          where: {
-            rutProveedor: detalle.rutProveedor,
-            folio: detalle.folio,
-            tipoDte: detalle.tipoDte
+        try {
+          // Ensure all required values are defined before querying
+          if (!detalle.rutProveedor || !detalle.folio || !detalle.tipoDte) {
+            console.warn(`Missing composite key values for detalle ${detalle.detalleId}:`, {
+              rutProveedor: detalle.rutProveedor,
+              folio: detalle.folio,
+              tipoDte: detalle.tipoDte
+            });
+            return {
+              ...detalle.toJSON(),
+              nota: null
+            };
           }
-        });
-        
-        return {
-          ...detalle.toJSON(),
-          nota: nota ? nota.toJSON() : null
-        };
+
+          const nota = await Notas.findOne({
+            where: {
+              rutProveedor: detalle.rutProveedor,
+              folio: detalle.folio,
+              tipoDte: detalle.tipoDte
+            }
+          });
+          
+          return {
+            ...detalle.toJSON(),
+            nota: nota ? nota.toJSON() : null
+          };
+        } catch (error) {
+          console.error(`Error fetching nota for detalle ${detalle.detalleId}:`, error);
+          return {
+            ...detalle.toJSON(),
+            nota: null
+          };
+        }
       })
     );
     
