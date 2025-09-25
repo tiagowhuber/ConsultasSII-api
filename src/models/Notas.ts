@@ -26,24 +26,11 @@ export class Notas extends Model {
   declare notaId: number;
 
   @Column({
-    type: DataType.STRING(12),
-    field: 'rut_proveedor',
-    allowNull: false
-  })
-  declare rutProveedor: string;
-
-  @Column({
     type: DataType.BIGINT,
-    allowNull: false
+    allowNull: false,
+    unique: true
   })
   declare folio: string;
-
-  @Column({
-    type: DataType.INTEGER,
-    field: 'tipo_dte',
-    allowNull: false
-  })
-  declare tipoDte: number;
 
   @Column({
     type: DataType.TEXT

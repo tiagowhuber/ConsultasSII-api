@@ -138,54 +138,16 @@ export const getDetalleCompras = async (req: Request, res: Response): Promise<vo
         },
         { model: TipoDte, as: 'tipoDteInfo' },
         { model: Proveedor, as: 'proveedor' },
-        { model: OtrosImpuestos, as: 'otrosImpuestos' }
+        { model: OtrosImpuestos, as: 'otrosImpuestos' },
+        { model: Notas, as: 'nota' } // Now we can use proper Sequelize association!
       ],
       order: [['fechaEmision', 'DESC']],
       limit: Number(limit),
       offset
     });
     
-    // Manually fetch notas for each detalle using composite key
-    const detallesWithNotas = await Promise.all(
-      rows.map(async (detalle) => {
-        try {
-          // Ensure all required values are defined before querying
-          if (!detalle.rutProveedor || !detalle.folio || !detalle.tipoDte) {
-            console.warn(`Missing composite key values for detalle ${detalle.detalleId}:`, {
-              rutProveedor: detalle.rutProveedor,
-              folio: detalle.folio,
-              tipoDte: detalle.tipoDte
-            });
-            return {
-              ...detalle.toJSON(),
-              nota: null
-            };
-          }
-
-          const nota = await Notas.findOne({
-            where: {
-              rutProveedor: detalle.rutProveedor,
-              folio: detalle.folio,
-              tipoDte: detalle.tipoDte
-            }
-          });
-          
-          return {
-            ...detalle.toJSON(),
-            nota: nota ? nota.toJSON() : null
-          };
-        } catch (error) {
-          console.error(`Error fetching nota for detalle ${detalle.detalleId}:`, error);
-          return {
-            ...detalle.toJSON(),
-            nota: null
-          };
-        }
-      })
-    );
-    
     res.json({
-      data: detallesWithNotas,
+      data: rows,
       pagination: {
         total: count,
         page: Number(page),

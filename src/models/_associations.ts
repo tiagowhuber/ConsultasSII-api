@@ -5,6 +5,7 @@ import { Proveedor } from './Proveedor.js';
 import { ResumenCompras } from './ResumenCompras.js';
 import { DetalleCompras } from './DetalleCompras.js';
 import { OtrosImpuestos } from './OtrosImpuestos.js';
+import { Notas } from './Notas.js';
 
 export const initializeAssociations = () => {
   // Empresa associations
@@ -24,9 +25,11 @@ export const initializeAssociations = () => {
   DetalleCompras.belongsTo(TipoDte, { foreignKey: 'tipoDte', as: 'tipoDteInfo' });
   DetalleCompras.belongsTo(Proveedor, { foreignKey: 'rutProveedor', as: 'proveedor' });
   DetalleCompras.hasMany(OtrosImpuestos, { foreignKey: 'detalleId', as: 'otrosImpuestos' });
-  
-  // Note: Notas association with composite key handled manually in controllers due to Sequelize limitations
+  DetalleCompras.hasOne(Notas, { foreignKey: 'folio', sourceKey: 'folio', as: 'nota' });
   
   // OtrosImpuestos associations
   OtrosImpuestos.belongsTo(DetalleCompras, { foreignKey: 'detalleId', as: 'detalleCompra' });
+  
+  // Notas associations
+  Notas.belongsTo(DetalleCompras, { foreignKey: 'folio', targetKey: 'folio', as: 'detalleCompra' });
 };

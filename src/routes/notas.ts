@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   getAllNotas,
-  getNotaByCompositeKey,
+  getNotaByFolio,
   createNota,
   updateNota,
   updateNotaComment,
@@ -11,13 +11,13 @@ import {
 
 const router = Router();
 
-// Notas routes using composite key (rut_proveedor, folio, tipo_dte)
+// Notas routes using simple folio key
 router.get('/notas', getAllNotas);
-router.get('/notas/:rutProveedor/:folio/:tipoDte', getNotaByCompositeKey);
+router.get('/notas/:folio', getNotaByFolio);
 router.post('/notas', createNota);
-router.put('/notas/:rutProveedor/:folio/:tipoDte', updateNota);
-router.put('/notas/:rutProveedor/:folio/:tipoDte/comment', updateNotaComment);
-router.put('/notas/:rutProveedor/:folio/:tipoDte/contabilizado', updateNotaContabilizado);
-router.delete('/notas/:rutProveedor/:folio/:tipoDte', deleteNota);
+router.put('/notas/:folio', updateNota);
+router.put('/notas/:folio/comment', updateNotaComment);
+router.put('/notas/:folio/contabilizado', updateNotaContabilizado);
+router.delete('/notas/:folio', deleteNota);
 
 export default router;
