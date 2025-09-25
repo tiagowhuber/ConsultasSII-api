@@ -6,9 +6,7 @@ import {
   getResumenCompras,
   getDetalleCompras,
   getAllProveedores,
-  getAllTiposDte,
-  updateDetalleCompraComment,
-  updateDetalleCompraContabilizado
+  getAllTiposDte
 } from '../controllers/Dte.controller.js';
 
 const router = Router();
@@ -33,11 +31,5 @@ router.get('/proveedores', getAllProveedores);
 
 // Tipo DTE routes
 router.get('/tipos-dte', getAllTiposDte);
-
-// Comment routes
-router.put('/detalle-compras/:detalleId/comment', updateDetalleCompraComment);
-
-// Contabilizado routes
-router.put('/detalle-compras/:detalleId/contabilizado', updateDetalleCompraContabilizado);
 
 export default router;

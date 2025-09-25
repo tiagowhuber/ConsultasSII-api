@@ -25,6 +25,8 @@ export const initializeAssociations = () => {
   DetalleCompras.belongsTo(Proveedor, { foreignKey: 'rutProveedor', as: 'proveedor' });
   DetalleCompras.hasMany(OtrosImpuestos, { foreignKey: 'detalleId', as: 'otrosImpuestos' });
   
+  // Note: Notas association with composite key handled manually in controllers due to Sequelize limitations
+  
   // OtrosImpuestos associations
   OtrosImpuestos.belongsTo(DetalleCompras, { foreignKey: 'detalleId', as: 'detalleCompra' });
 };

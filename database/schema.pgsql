@@ -110,12 +110,6 @@ CREATE TABLE IF NOT EXISTS dte.detalle_compras (
     tasa_otro_impuesto VARCHAR(10),
     codigo_otro_impuesto INTEGER DEFAULT 0,
     
-    -- Comment field for additional notes
-    comentario TEXT,
-    
-    -- Accounting status
-    contabilizado BOOLEAN NOT NULL DEFAULT FALSE,
-    
     estado VARCHAR(20) NOT NULL CHECK (estado IN ('Confirmada', 'Pendiente', 'Rechazada')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -124,6 +118,20 @@ CREATE TABLE IF NOT EXISTS dte.detalle_compras (
     CONSTRAINT fk_detalle_compras_tipo_dte FOREIGN KEY (tipo_dte) REFERENCES dte.tipo_dte (tipo_dte),
     CONSTRAINT fk_detalle_compras_proveedor FOREIGN KEY (rut_proveedor) REFERENCES dte.proveedor (rut_proveedor),
     UNIQUE (rut_proveedor, folio, tipo_dte) -- Prevents duplicate documents
+);
+
+-- Notes table for user inputs related to purchase records
+CREATE TABLE IF NOT EXISTS dte.notas (
+    nota_id SERIAL PRIMARY KEY,
+    rut_proveedor VARCHAR(12) NOT NULL,
+    folio BIGINT NOT NULL,
+    tipo_dte INTEGER NOT NULL,
+    comentario TEXT,
+    contabilizado BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notas_detalle FOREIGN KEY (rut_proveedor, folio, tipo_dte) REFERENCES dte.detalle_compras (rut_proveedor, folio, tipo_dte) ON DELETE CASCADE,
+    UNIQUE (rut_proveedor, folio, tipo_dte) -- One note per purchase detail
 );
 
 -- Other taxes detail (normalized from the otrosImpuestos array)
@@ -185,6 +193,7 @@ CREATE INDEX idx_detalle_compras_fecha_emision ON dte.detalle_compras (fecha_emi
 CREATE INDEX idx_detalle_compras_fecha_recepcion ON dte.detalle_compras (fecha_recepcion);
 CREATE INDEX idx_detalle_compras_folio ON dte.detalle_compras (folio);
 CREATE INDEX idx_otros_impuestos_detalle ON dte.otros_impuestos (detalle_id);
+CREATE INDEX idx_notas_composite ON dte.notas (rut_proveedor, folio, tipo_dte);
 
 -- Insert common DTE types
 INSERT INTO dte.tipo_dte (tipo_dte, descripcion, categoria) VALUES
@@ -214,5 +223,6 @@ CREATE TRIGGER update_periodo_updated_at BEFORE UPDATE ON dte.periodo FOR EACH R
 CREATE TRIGGER update_proveedor_updated_at BEFORE UPDATE ON dte.proveedor FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
 CREATE TRIGGER update_resumen_compras_updated_at BEFORE UPDATE ON dte.resumen_compras FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
 CREATE TRIGGER update_detalle_compras_updated_at BEFORE UPDATE ON dte.detalle_compras FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
+CREATE TRIGGER update_notas_updated_at BEFORE UPDATE ON dte.notas FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
 CREATE TRIGGER update_resumen_ventas_updated_at BEFORE UPDATE ON dte.resumen_ventas FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
 CREATE TRIGGER update_detalle_ventas_updated_at BEFORE UPDATE ON dte.detalle_ventas FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();

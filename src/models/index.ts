@@ -6,6 +6,7 @@ export { Proveedor } from './Proveedor.js';
 export { ResumenCompras } from './ResumenCompras.js';
 export { DetalleCompras } from './DetalleCompras.js';
 export { OtrosImpuestos } from './OtrosImpuestos.js';
+export { Notas } from './Notas.js';
 
 // Import sequelize instance
 import sequelize from '../config/db.js';
@@ -16,6 +17,7 @@ import { Proveedor } from './Proveedor.js';
 import { ResumenCompras } from './ResumenCompras.js';
 import { DetalleCompras } from './DetalleCompras.js';
 import { OtrosImpuestos } from './OtrosImpuestos.js';
+import { Notas } from './Notas.js';
 import { initializeAssociations } from './_associations.js';
 
 // Initialize models
@@ -26,7 +28,8 @@ const models = {
   Proveedor,
   ResumenCompras,
   DetalleCompras,
-  OtrosImpuestos
+  OtrosImpuestos,
+  Notas
 };
 
 // Add models to sequelize instance manually
@@ -37,7 +40,8 @@ sequelize.addModels([
   Proveedor,
   ResumenCompras,
   DetalleCompras,
-  OtrosImpuestos
+  OtrosImpuestos,
+  Notas
 ]);
 
 // Initialize associations

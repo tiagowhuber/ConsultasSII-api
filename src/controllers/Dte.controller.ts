@@ -6,7 +6,8 @@ import {
   Proveedor, 
   ResumenCompras, 
   DetalleCompras,
-  OtrosImpuestos 
+  OtrosImpuestos,
+  Notas 
 } from '../models/index.js';
 import { Op } from 'sequelize';
 
@@ -144,8 +145,26 @@ export const getDetalleCompras = async (req: Request, res: Response): Promise<vo
       offset
     });
     
+    // Manually fetch notas for each detalle using composite key
+    const detallesWithNotas = await Promise.all(
+      rows.map(async (detalle) => {
+        const nota = await Notas.findOne({
+          where: {
+            rutProveedor: detalle.rutProveedor,
+            folio: detalle.folio,
+            tipoDte: detalle.tipoDte
+          }
+        });
+        
+        return {
+          ...detalle.toJSON(),
+          nota: nota ? nota.toJSON() : null
+        };
+      })
+    );
+    
     res.json({
-      data: rows,
+      data: detallesWithNotas,
       pagination: {
         total: count,
         page: Number(page),
@@ -195,64 +214,6 @@ export const getAllTiposDte = async (req: Request, res: Response): Promise<void>
     res.json(tipos);
   } catch (error) {
     console.error('Error fetching tipos DTE:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
-
-// Comment Controllers
-export const updateDetalleCompraComment = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { detalleId } = req.params;
-    const { comentario } = req.body;
-    
-    const detalleCompra = await DetalleCompras.findByPk(detalleId);
-    
-    if (!detalleCompra) {
-      res.status(404).json({ error: 'Detalle compra not found' });
-      return;
-    }
-    
-    await detalleCompra.update({ comentario });
-    
-    res.json({ 
-      message: 'Comment updated successfully',
-      detalleId: detalleId,
-      comentario: comentario
-    });
-  } catch (error) {
-    console.error('Error updating comment:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
-
-// Contabilizado Controllers
-export const updateDetalleCompraContabilizado = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { detalleId } = req.params;
-    const { contabilizado } = req.body;
-    
-    // Validate the contabilizado value
-    if (typeof contabilizado !== 'boolean') {
-      res.status(400).json({ error: 'contabilizado must be a boolean value' });
-      return;
-    }
-    
-    const detalleCompra = await DetalleCompras.findByPk(detalleId);
-    
-    if (!detalleCompra) {
-      res.status(404).json({ error: 'Detalle compra not found' });
-      return;
-    }
-    
-    await detalleCompra.update({ contabilizado });
-    
-    res.json({ 
-      message: 'Contabilizado status updated successfully',
-      detalleId: detalleId,
-      contabilizado: contabilizado
-    });
-  } catch (error) {
-    console.error('Error updating contabilizado status:', error);
     res.status(500).json({ error: 'Database error' });
   }
 };
