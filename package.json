@@ -11,7 +11,13 @@
     "clean": "if exist dist rmdir /s /q dist",
     "build:clean": "npm run clean && npm run build"
   },
-  "keywords": ["sii", "chile", "tax", "api", "purchase-data"],
+  "keywords": [
+    "sii",
+    "chile",
+    "tax",
+    "api",
+    "purchase-data"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

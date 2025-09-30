@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import dteRoutes from './src/routes/dte.js';
 import siiRoutes from './src/routes/sii.js';
 import notasRoutes from './src/routes/notas.js';
+import schedulerRoutes from './src/routes/scheduler.js';
 import { testConnection } from './src/config/db.js';
 import './src/models/index.js'; // Initialize models
 
@@ -31,6 +32,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/dte', dteRoutes);
 app.use('/api/sii', siiRoutes);
+app.use('/api/scheduler', schedulerRoutes);
 app.use('/api', notasRoutes); 
 
 const start = async () => {
