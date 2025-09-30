@@ -1,8 +1,10 @@
 import { Sequelize } from 'sequelize-typescript';
+import pg from 'pg';
 
 const sequelize = new Sequelize({
   database: process.env.PGDATABASE || 'postgres',
   dialect: 'postgres',
+  dialectModule: pg,
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   host: process.env.PGHOST || 'localhost',
