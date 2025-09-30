@@ -30,6 +30,21 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'SII Data API is running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/scheduler/health',
+      sii_fetch: '/api/sii/fetch/:year/:month',
+      sii_store: '/api/sii/fetch-and-store/:year/:month (requires auth)'
+    },
+    docs: 'See GitHub repository for full documentation'
+  });
+});
+
 app.use('/api/dte', dteRoutes);
 app.use('/api/sii', siiRoutes);
 app.use('/api/scheduler', schedulerRoutes);
