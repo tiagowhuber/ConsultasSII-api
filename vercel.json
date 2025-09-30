@@ -1,16 +1,13 @@
 {
   "version": 2,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/app.ts"
+      "source": "/(.*)",
+      "destination": "/dist/app.js"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  },
   "functions": {
-    "app.ts": {
+    "dist/app.js": {
       "maxDuration": 300
     }
   }

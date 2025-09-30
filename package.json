@@ -8,6 +8,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/app.js",
+    "vercel-build": "npm run build",
     "clean": "if exist dist rmdir /s /q dist",
     "build:clean": "npm run clean && npm run build"
   },
