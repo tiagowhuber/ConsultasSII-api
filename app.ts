@@ -24,11 +24,17 @@ app.use(cors({
     'http://127.0.0.1:5173', // Alternative localhost
     'http://127.0.0.1:5174', // Alternative localhost alternative port
     'https://consultassii.netlify.app', // Netlify production site
-    'https://consultas-sii-gs1gi0v01-tiagos-projects-df2f6730.vercel.app' // Vercel production site
+    'https://consultas-sii-api.vercel.app', // Vercel production site
+    'https://consultas-sii-gs1gi0v01-tiagos-projects-df2f6730.vercel.app', // Old Vercel URL
+    // Allow any Netlify subdomain for branch deploys
+    /^https:\/\/[a-zA-Z0-9-]+--consultassii\.netlify\.app$/,
+    /^https:\/\/consultassii--[a-zA-Z0-9-]+\.netlify\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
 app.use(express.json());
