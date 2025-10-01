@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { fetchSIIData, fetchSIIDataOnly, storeSIIData } from '../services/simpleAPIdataFetch.js';
 
-// Fetch and store SII data for a specific month/year
+// Fetch and store SII data for a specific month/year 
 export const fetchAndStore = async (req: Request, res: Response): Promise<void> => {
   try {
     const { month, year } = req.params;
