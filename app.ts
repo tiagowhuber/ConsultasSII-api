@@ -60,23 +60,15 @@ app.use('/api', notasRoutes);
 
 const start = async () => {
   try {
-    // For serverless (Vercel), don't block on database connection
-    // Database will connect lazily when first needed
-    if (process.env.VERCEL !== '1') {
-      // Only test connection in non-serverless environments
-      await testConnection();
-      console.log('Database connection verified');
-    } else {
-      // In Vercel, test connection in background (non-blocking)
-      testConnection()
-        .then(() => console.log('Database connection verified'))
-        .catch((err) => console.warn('Database connection failed (will retry on first use):', err.message));
-    }
+    // Test database connection
+    await testConnection();
+    
+    // Sync database models (don't force in production)
+    // Skip sync for now to test basic connection
+    // await syncDatabase(process.env.NODE_ENV !== 'production');
     
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`Mock mode: ${process.env.USE_MOCK === 'true' ? 'ENABLED' : 'DISABLED'}`);
+      console.log(` Server running on port ${PORT}`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);
