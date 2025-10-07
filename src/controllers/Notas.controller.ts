@@ -53,7 +53,7 @@ export const getNotaByFolio = async (req: Request, res: Response): Promise<void>
 // Create nota
 export const createNota = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { folio, comentario, contabilizado } = req.body;
+    const { folio, comentario, contabilizado, pagado } = req.body;
     
     // Check if detalle_compras exists
     const detalleCompra = await DetalleCompras.findOne({
@@ -78,7 +78,8 @@ export const createNota = async (req: Request, res: Response): Promise<void> => 
     const nota = await Notas.create({
       folio,
       comentario,
-      contabilizado: contabilizado || false
+      contabilizado: contabilizado || false,
+      pagado: pagado || false
     });
     
     res.status(201).json(nota);
@@ -92,7 +93,7 @@ export const createNota = async (req: Request, res: Response): Promise<void> => 
 export const updateNota = async (req: Request, res: Response): Promise<void> => {
   try {
     const { folio } = req.params;
-    const { comentario, contabilizado } = req.body;
+    const { comentario, contabilizado, pagado } = req.body;
     
     const nota = await Notas.findOne({ 
       where: { folio } 
@@ -106,6 +107,7 @@ export const updateNota = async (req: Request, res: Response): Promise<void> => 
     const updateData: any = {};
     if (comentario !== undefined) updateData.comentario = comentario;
     if (contabilizado !== undefined) updateData.contabilizado = contabilizado;
+    if (pagado !== undefined) updateData.pagado = pagado;
     
     await nota.update(updateData);
     
@@ -204,6 +206,56 @@ export const updateNotaContabilizado = async (req: Request, res: Response): Prom
     });
   } catch (error) {
     console.error('Error updating contabilizado status:', error);
+    res.status(500).json({ error: 'Database error' });
+  }
+};
+
+// Update nota pagado status
+export const updateNotaPagado = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { folio } = req.params;
+    const { pagado } = req.body;
+    
+    // Validate the pagado value
+    if (typeof pagado !== 'boolean') {
+      res.status(400).json({ error: 'pagado must be a boolean value' });
+      return;
+    }
+    
+    // Check if detalle_compras exists
+    const detalleCompra = await DetalleCompras.findOne({
+      where: { folio }
+    });
+    
+    if (!detalleCompra) {
+      res.status(400).json({ error: 'DetalleCompras not found' });
+      return;
+    }
+    
+    let nota = await Notas.findOne({ 
+      where: { folio } 
+    });
+    
+    if (!nota) {
+      // Create nota if it doesn't exist
+      nota = await Notas.create({
+        folio,
+        comentario: null,
+        contabilizado: false,
+        pagado
+      });
+    } else {
+      // Update existing nota
+      await nota.update({ pagado });
+    }
+    
+    res.json({ 
+      message: 'Pagado status updated successfully',
+      folio,
+      pagado
+    });
+  } catch (error) {
+    console.error('Error updating pagado status:', error);
     res.status(500).json({ error: 'Database error' });
   }
 };

@@ -127,6 +127,7 @@ CREATE TABLE IF NOT EXISTS dte.notas (
     folio BIGINT NOT NULL,
     comentario TEXT,
     contabilizado BOOLEAN NOT NULL DEFAULT FALSE,
+    pagado BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notas_folio FOREIGN KEY (folio) REFERENCES dte.detalle_compras (folio) ON DELETE CASCADE,

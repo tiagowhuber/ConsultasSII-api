@@ -6,6 +6,7 @@ import {
   updateNota,
   updateNotaComment,
   updateNotaContabilizado,
+  updateNotaPagado,
   deleteNota
 } from '../controllers/Notas.controller.js';
 
@@ -18,6 +19,7 @@ router.post('/notas', createNota);
 router.put('/notas/:folio', updateNota);
 router.put('/notas/:folio/comment', updateNotaComment);
 router.put('/notas/:folio/contabilizado', updateNotaContabilizado);
+router.put('/notas/:folio/pagado', updateNotaPagado);
 router.delete('/notas/:folio', deleteNota);
 
 export default router;

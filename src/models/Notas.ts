@@ -44,6 +44,13 @@ export class Notas extends Model {
   })
   declare contabilizado: boolean;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  })
+  declare pagado: boolean;
+
   @CreatedAt
   @Column({
     field: 'created_at'
