@@ -511,12 +511,17 @@ const MOCK_RESPONSE: FormResponse = {
 };
 
 export async function fetchSIIData(month: string | number, year: string | number): Promise<FormResponse> {
+  console.log(`fetchSIIData called for ${month}/${year}`);
+  
   const requestBody: FormRequest = {
     RutUsuario: '77147627-9',
     PasswordSII: process.env.SII_PASSWORD || '',
     RutEmpresa: '77147627-9',
     Ambiente: 1,
   };
+
+  console.log(`Request body prepared - Password set: ${requestBody.PasswordSII ? '✅' : '❌'}`);
+  console.log(`API_KEY set: ${process.env.API_KEY ? '✅' : '❌'}`);
 
   // If USE_MOCK=true, use the in-file mock response for testing
   if (process.env.USE_MOCK === 'true') {
@@ -525,29 +530,52 @@ export async function fetchSIIData(month: string | number, year: string | number
     return MOCK_RESPONSE;
   }
 
-  const response = await api.post<FormResponse>(
-    `/api/RCV/compras/${month}/${year}`,
-    requestBody,
-    {
-      headers: {
-        Authorization: process.env.API_KEY || '',
-      },
+  try {
+    console.log(`Making API call to simpleapi.cl for ${month}/${year}`);
+    const response = await api.post<FormResponse>(
+      `/api/RCV/compras/${month}/${year}`,
+      requestBody,
+      {
+        headers: {
+          Authorization: process.env.API_KEY || '',
+        },
+      }
+    );
+    
+    console.log(`API call successful, status: ${response.status}`);
+    console.log(`Response data keys: ${Object.keys(response.data)}`);
+
+    // Store the response data in the database
+    console.log(`Storing data in database...`);
+    await storeSIIDataInDatabase(response.data);
+    console.log(`Data stored successfully`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Error in fetchSIIData:', error);
+    if (error.response) {
+      console.error('Response error status:', error.response.status);
+      console.error('Response error data:', error.response.data);
+    } else if (error.request) {
+      console.error('Request error:', error.request);
+    } else {
+      console.error('Setup error:', error.message);
     }
-  );
-
-  // Store the response data in the database
-  await storeSIIDataInDatabase(response.data);
-
-  return response.data;
+    throw error;
+  }
 }
 
 async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
+  console.log(`Starting database storage for period ${data.caratula.periodo}`);
   const transaction: Transaction = await sequelize.transaction();
   
   try {
     const { caratula, compras } = data;
     
+    console.log(`Processing data: ${compras.resumenes.length} resumenes, ${compras.detalleCompras.length} detalles`);
+    
     // 1. Ensure empresa exists
+    console.log(`Processing empresa: ${caratula.rutEmpresa}`);
     await Empresa.findOrCreate({
       where: { rutEmpresa: caratula.rutEmpresa },
       defaults: {
@@ -785,10 +813,12 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
 
     await transaction.commit();
     console.log(`Successfully stored SII data for period ${caratula.periodo}`);
+    console.log(`Final summary: ${compras.resumenes.length} resumenes, ${compras.detalleCompras.length} detalles processed`);
     
   } catch (error) {
     await transaction.rollback();
     console.error('Error storing SII data in database:', error);
+    console.error('Database error stack:', error instanceof Error ? error.stack : 'No stack trace');
     throw new Error(`Failed to store SII data: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -61,34 +61,42 @@ jobs:
           DAY_OF_WEEK=$(date +%u)
           if [ $DAY_OF_WEEK -le 5 ]; then
             echo "is_business_day=true" >> $GITHUB_OUTPUT
-            echo "✅ Today is a business day (day $DAY_OF_WEEK)"
+            echo "Today is a business day (day $DAY_OF_WEEK)"
           else
             echo "is_business_day=false" >> $GITHUB_OUTPUT
-            echo "⏭️ Today is weekend (day $DAY_OF_WEEK), skipping"
+            echo "⏭Today is weekend (day $DAY_OF_WEEK), skipping"
           fi
       
       - name: Trigger SII Data Fetch
         if: steps.business_day.outputs.is_business_day == 'true' || github.event_name == 'workflow_dispatch'
         run: |
-          echo "🔄 Starting SII data fetch for ${{ steps.date.outputs.year }}/${{ steps.date.outputs.month }}"
+          echo "Starting SII data fetch for ${{ steps.date.outputs.year }}/${{ steps.date.outputs.month }}"
           
           # Test API availability first
-          echo "� Testing API health endpoint..."
+          echo "Testing API health endpoint..."
           HEALTH_RESPONSE=$(curl -s "${{ secrets.API_BASE_URL }}/api/scheduler/health" -w "\nHTTP_STATUS:%{http_code}")
           HEALTH_STATUS=$(echo "$HEALTH_RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
-          echo "📊 Health check status: $HEALTH_STATUS"
+          echo "Health check status: $HEALTH_STATUS"
           
           if [ "$HEALTH_STATUS" -ne 200 ]; then
-            echo "❌ API health check failed. API may not be properly deployed."
-            echo "📄 Health response: $HEALTH_RESPONSE"
+            echo "API health check failed. API may not be properly deployed."
+            echo "Health response: $HEALTH_RESPONSE"
             exit 1
           fi
           
+          # Test SII test endpoint for debugging
+          echo "Testing SII debug endpoint..."
+          TEST_RESPONSE=$(curl -s "${{ secrets.API_BASE_URL }}/api/sii/test" -w "\nHTTP_STATUS:%{http_code}")
+          TEST_STATUS=$(echo "$TEST_RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+          echo "Test endpoint status: $TEST_STATUS"
+          TEST_BODY=$(echo "$TEST_RESPONSE" | sed '/HTTP_STATUS:/,$d')
+          echo "Test response: $TEST_BODY"
+          
           # Try the actual endpoint
           API_URL="${{ secrets.API_BASE_URL }}/api/sii/fetch-and-store/${{ steps.date.outputs.year }}/${{ steps.date.outputs.month }}"
-          echo "📍 API URL: $API_URL"
+          echo "API URL: $API_URL"
           
-          echo "🔄 Making fetch-and-store request..."
+          echo "Making fetch-and-store request..."
           RESPONSE=$(curl -X POST \
             "$API_URL" \
             -H "Content-Type: application/json" \
@@ -106,22 +114,22 @@ jobs:
           REDIRECT_URL=$(echo "$RESPONSE" | grep "REDIRECT_URL:" | cut -d: -f2-)
           RESPONSE_BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS:/,$d')
           
-          echo "⏱️ Request completed in: $TIME_TOTAL"
-          echo "📊 HTTP Status: $HTTP_STATUS"
-          echo "🔗 Redirect URL: $REDIRECT_URL"
-          echo "📄 Response: $RESPONSE_BODY"
+          echo "Request completed in: $TIME_TOTAL"
+          echo "HTTP Status: $HTTP_STATUS"
+          echo "Redirect URL: $REDIRECT_URL"
+          echo "Response: $RESPONSE_BODY"
           
           if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 201 ]; then
-            echo "✅ SII data fetch completed successfully!"
+            echo "SII data fetch completed successfully!"
           else
-            echo "❌ SII data fetch failed with status: $HTTP_STATUS"
+            echo "SII data fetch failed with status: $HTTP_STATUS"
             exit 1
           fi
       
       - name: Notify on failure
         if: failure()
         run: |
-          echo "🚨 SII data fetch failed!"
-          echo "⏰ Time: $(date)"
-          echo "📅 Target: ${{ steps.date.outputs.year }}/${{ steps.date.outputs.month }}"
-          echo "🔗 Check the GitHub Actions logs for more details"
+          echo "SII data fetch failed!"
+          echo "Time: $(date)"
+          echo "Target: ${{ steps.date.outputs.year }}/${{ steps.date.outputs.month }}"
+          echo "Check the GitHub Actions logs for more details"
