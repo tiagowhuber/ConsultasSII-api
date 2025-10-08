@@ -139,7 +139,11 @@ export const getDetalleCompras = async (req: Request, res: Response): Promise<vo
         { model: TipoDte, as: 'tipoDteInfo' },
         { model: Proveedor, as: 'proveedor' },
         { model: OtrosImpuestos, as: 'otrosImpuestos' },
-        { model: Notas, as: 'nota' } // Now we can use proper Sequelize association!
+        { 
+          model: Notas, 
+          as: 'nota',
+          required: false // Make this a LEFT JOIN instead of INNER JOIN
+        }
       ],
       order: [['fechaEmision', 'DESC']],
       limit: Number(limit),
