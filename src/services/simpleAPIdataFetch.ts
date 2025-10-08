@@ -11,6 +11,7 @@ import {
   sequelize 
 } from '../models/index.js';
 import { Transaction, Op } from 'sequelize';
+import { notificationService, type NewRecordNotification } from './notificationService.js';
 
 // Create axios instance
 const api = axios.create({
@@ -701,7 +702,10 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
       }, { transaction });
     }
 
-    // 7. Smart upsert for detalle de compras - only update changed records
+    // 7. Track new records for notifications
+    const newRecords: any[] = [];
+
+    // Smart upsert for detalle de compras - only update changed records
     for (const detalle of compras.detalleCompras) {
       const folioString = detalle.folio.toString();
       
@@ -768,9 +772,20 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
           detalleCompra = existingDetalle;
         }
       } else {
-        // Create new record
+        // Create new record - THIS IS WHERE WE TRACK NEW RECORDS
         detalleCompra = await DetalleCompras.create(detalleData, { transaction });
-        console.log(`Created new detalle_compras for folio ${folioString}`);
+        console.log(`Created NEW detalle_compras for folio ${folioString}`);
+        
+        // Track this as a new record for notification
+        newRecords.push({
+          folio: folioString,
+          rutProveedor: detalle.rutProveedor,
+          razonSocial: detalle.razonSocial,
+          montoTotal: detalle.montoTotal,
+          tipoDTE: detalle.tipoDTE,
+          tipoDTEString: detalle.tipoDTEString,
+          fechaEmision: detalle.fechaEmision
+        });
       }
 
       // Handle otros impuestos - clear and recreate if they exist
@@ -814,6 +829,26 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
     await transaction.commit();
     console.log(`Successfully stored SII data for period ${caratula.periodo}`);
     console.log(`Final summary: ${compras.resumenes.length} resumenes, ${compras.detalleCompras.length} detalles processed`);
+    
+    // SEND NOTIFICATIONS FOR NEW RECORDS AFTER SUCCESSFUL COMMIT
+    if (newRecords.length > 0) {
+      console.log(`Sending notifications for ${newRecords.length} new records`);
+      
+      for (const record of newRecords) {
+        const notification: NewRecordNotification = {
+          folio: record.folio,
+          rutProveedor: record.rutProveedor,
+          razonSocial: record.razonSocial,
+          montoTotal: record.montoTotal,
+          tipoDTE: record.tipoDTE,
+          tipoDTEString: record.tipoDTEString,
+          fechaEmision: record.fechaEmision,
+          timestamp: new Date().toISOString()
+        };
+        
+        notificationService.notifyNewRecord(notification);
+      }
+    }
     
   } catch (error) {
     await transaction.rollback();

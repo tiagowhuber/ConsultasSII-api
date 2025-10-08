@@ -2,18 +2,24 @@ import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
 import dteRoutes from './src/routes/dte.js';
 import siiRoutes from './src/routes/sii.js';
 import notasRoutes from './src/routes/notas.js';
 import schedulerRoutes from './src/routes/scheduler.js';
 import { testConnection } from './src/config/db.js';
+import { notificationService } from './src/services/notificationService.js';
 import './src/models/index.js'; // Initialize models
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
+const server = createServer(app);
 const PORT = process.env.PORT || 3000;
+
+// Initialize WebSocket server
+notificationService.initialize(server);
 
 // CORS configuration
 app.use(cors({
@@ -44,8 +50,15 @@ app.get('/', (req, res) => {
   res.json({
     message: 'SII Data API is running',
     version: '1.0.0',
+    connectedClients: notificationService.getConnectedClientsCount(),
     endpoints: {
       health: '/api/scheduler/health',
+      empresas: '/api/dte/empresas',
+      tipos_dte: '/api/dte/tipos',
+      proveedores: '/api/dte/proveedores',
+      periodos: '/api/dte/periodos',
+      resumen_compras: '/api/dte/resumen-compras/:periodoId',
+      detalle_compras: '/api/dte/detalle-compras/:periodoId',
       sii_fetch: '/api/sii/fetch/:year/:month',
       sii_store: '/api/sii/fetch-and-store/:year/:month (requires auth)'
     },
@@ -67,8 +80,9 @@ const start = async () => {
     // Skip sync for now to test basic connection
     // await syncDatabase(process.env.NODE_ENV !== 'production');
     
-    app.listen(PORT, () => {
-      console.log(` Server running on port ${PORT}`);
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`WebSocket server initialized`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);
