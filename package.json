@@ -2,14 +2,16 @@
   "name": "constultassiiapi",
   "version": "1.0.0",
   "description": "API backend for SII (Chilean Tax Authority) purchase data consultation system",
-  "main": "app.ts",
+  "main": "dist/app.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "start": "ts-node app.ts",
+    "start": "node dist/app.js",
+    "start:dev": "ts-node app.ts",
     "clean": "if exist dist rmdir /s /q dist",
-    "build:clean": "npm run clean && npm run build"
+    "build:clean": "npm run clean && npm run build",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "sii",
