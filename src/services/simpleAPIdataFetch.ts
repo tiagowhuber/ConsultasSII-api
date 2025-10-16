@@ -515,9 +515,9 @@ export async function fetchSIIData(month: string | number, year: string | number
   console.log(`fetchSIIData called for ${month}/${year}`);
   
   const requestBody: FormRequest = {
-    RutUsuario: '77147627-9',
+    RutUsuario: '65145564-2',
     PasswordSII: process.env.SII_PASSWORD || '',
-    RutEmpresa: '77147627-9',
+    RutEmpresa: '65145564-2',
     Ambiente: 1,
   };
 
@@ -861,9 +861,9 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
 // Separate function to only fetch data without storing
 export async function fetchSIIDataOnly(month: string | number, year: string | number): Promise<FormResponse> {
   const requestBody: FormRequest = {
-    RutUsuario: '77147627-9',
+    RutUsuario: '65145564-2',
     PasswordSII: process.env.SII_PASSWORD || '',
-    RutEmpresa: '77147627-9',
+    RutEmpresa: '65145564-2',
     Ambiente: 1,
   };
 
