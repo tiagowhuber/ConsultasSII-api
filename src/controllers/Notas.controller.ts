@@ -27,8 +27,18 @@ export const getNotaByFolio = async (req: Request, res: Response): Promise<void>
   try {
     const { folio } = req.params;
     
+    // First find the detalle_compras record to get the detalleId
+    const detalleCompra = await DetalleCompras.findOne({
+      where: { folio }
+    });
+    
+    if (!detalleCompra) {
+      res.status(404).json({ error: 'DetalleCompras not found for this folio' });
+      return;
+    }
+    
     const nota = await Notas.findOne({
-      where: { folio },
+      where: { detalleId: detalleCompra.detalleId },
       include: [
         { 
           model: DetalleCompras, 
@@ -67,15 +77,16 @@ export const createNota = async (req: Request, res: Response): Promise<void> => 
     
     // Check if nota already exists
     const existingNota = await Notas.findOne({ 
-      where: { folio } 
+      where: { detalleId: detalleCompra.detalleId } 
     });
     
     if (existingNota) {
-      res.status(400).json({ error: 'Nota already exists for this folio' });
+      res.status(400).json({ error: 'Nota already exists for this detalle' });
       return;
     }
     
     const nota = await Notas.create({
+      detalleId: detalleCompra.detalleId,
       folio,
       comentario,
       contabilizado: contabilizado || false,
@@ -95,8 +106,18 @@ export const updateNota = async (req: Request, res: Response): Promise<void> => 
     const { folio } = req.params;
     const { comentario, contabilizado, pagado } = req.body;
     
+    // First find the detalle_compras record to get the detalleId
+    const detalleCompra = await DetalleCompras.findOne({
+      where: { folio }
+    });
+    
+    if (!detalleCompra) {
+      res.status(404).json({ error: 'DetalleCompras not found for this folio' });
+      return;
+    }
+    
     const nota = await Notas.findOne({ 
-      where: { folio } 
+      where: { detalleId: detalleCompra.detalleId } 
     });
     
     if (!nota) {
@@ -135,12 +156,13 @@ export const updateNotaComment = async (req: Request, res: Response): Promise<vo
     }
     
     let nota = await Notas.findOne({ 
-      where: { folio } 
+      where: { detalleId: detalleCompra.detalleId } 
     });
     
     if (!nota) {
       // Create nota if it doesn't exist
       nota = await Notas.create({
+        detalleId: detalleCompra.detalleId,
         folio,
         comentario,
         contabilizado: false
@@ -184,12 +206,13 @@ export const updateNotaContabilizado = async (req: Request, res: Response): Prom
     }
     
     let nota = await Notas.findOne({ 
-      where: { folio } 
+      where: { detalleId: detalleCompra.detalleId } 
     });
     
     if (!nota) {
       // Create nota if it doesn't exist
       nota = await Notas.create({
+        detalleId: detalleCompra.detalleId,
         folio,
         comentario: null,
         contabilizado
@@ -233,12 +256,13 @@ export const updateNotaPagado = async (req: Request, res: Response): Promise<voi
     }
     
     let nota = await Notas.findOne({ 
-      where: { folio } 
+      where: { detalleId: detalleCompra.detalleId } 
     });
     
     if (!nota) {
       // Create nota if it doesn't exist
       nota = await Notas.create({
+        detalleId: detalleCompra.detalleId,
         folio,
         comentario: null,
         contabilizado: false,
@@ -265,8 +289,18 @@ export const deleteNota = async (req: Request, res: Response): Promise<void> => 
   try {
     const { folio } = req.params;
     
+    // First find the detalle_compras record to get the detalleId
+    const detalleCompra = await DetalleCompras.findOne({
+      where: { folio }
+    });
+    
+    if (!detalleCompra) {
+      res.status(404).json({ error: 'DetalleCompras not found for this folio' });
+      return;
+    }
+    
     const nota = await Notas.findOne({ 
-      where: { folio } 
+      where: { detalleId: detalleCompra.detalleId } 
     });
     
     if (!nota) {

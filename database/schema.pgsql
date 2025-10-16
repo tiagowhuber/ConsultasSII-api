@@ -117,21 +117,22 @@ CREATE TABLE IF NOT EXISTS dte.detalle_compras (
     CONSTRAINT fk_detalle_compras_periodo FOREIGN KEY (periodo_id) REFERENCES dte.periodo (periodo_id) ON DELETE CASCADE,
     CONSTRAINT fk_detalle_compras_tipo_dte FOREIGN KEY (tipo_dte) REFERENCES dte.tipo_dte (tipo_dte),
     CONSTRAINT fk_detalle_compras_proveedor FOREIGN KEY (rut_proveedor) REFERENCES dte.proveedor (rut_proveedor),
-    UNIQUE (folio), -- Folio is unique by itself in Chilean tax system
-    UNIQUE (rut_proveedor, folio, tipo_dte) -- Extra safety constraint
+    -- Removed global UNIQUE (folio) constraint - folios can be duplicated across different suppliers
+    UNIQUE (rut_proveedor, folio, tipo_dte) -- Proper business constraint: folio unique per supplier and document type
 );
 
 -- Notes table for user inputs related to purchase records
 CREATE TABLE IF NOT EXISTS dte.notas (
     nota_id SERIAL PRIMARY KEY,
-    folio BIGINT NOT NULL,
+    detalle_id INTEGER NOT NULL, -- Reference to detalle_compras.detalle_id
+    folio BIGINT NOT NULL, -- Keep folio for backward compatibility and easier queries
     comentario TEXT,
     contabilizado BOOLEAN NOT NULL DEFAULT FALSE,
     pagado BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_notas_folio FOREIGN KEY (folio) REFERENCES dte.detalle_compras (folio) ON DELETE CASCADE,
-    UNIQUE (folio) -- One note per folio
+    CONSTRAINT fk_notas_detalle_id FOREIGN KEY (detalle_id) REFERENCES dte.detalle_compras (detalle_id) ON DELETE CASCADE,
+    UNIQUE (detalle_id) -- One note per detalle_compras record
 );
 
 -- Other taxes detail (normalized from the otrosImpuestos array)
@@ -193,7 +194,8 @@ CREATE INDEX idx_detalle_compras_fecha_emision ON dte.detalle_compras (fecha_emi
 CREATE INDEX idx_detalle_compras_fecha_recepcion ON dte.detalle_compras (fecha_recepcion);
 CREATE INDEX idx_detalle_compras_folio ON dte.detalle_compras (folio);
 CREATE INDEX idx_outros_impuestos_detalle ON dte.otros_impuestos (detalle_id);
-CREATE INDEX idx_notas_folio ON dte.notas (folio);
+CREATE INDEX idx_notas_detalle_id ON dte.notas (detalle_id);
+CREATE INDEX idx_notas_folio ON dte.notas (folio); -- Keep folio index for backward compatibility
 
 -- Insert common DTE types
 INSERT INTO dte.tipo_dte (tipo_dte, descripcion, categoria) VALUES

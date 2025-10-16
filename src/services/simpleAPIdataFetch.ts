@@ -258,11 +258,12 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
     for (const detalle of compras.detalleCompras) {
       const folioString = detalle.folio.toString();
       
-      // Try to find existing record
+      // Search using the proper compound constraint: rut_proveedor, folio, tipo_dte
       const existingDetalle = await DetalleCompras.findOne({
         where: { 
+          rutProveedor: detalle.rutProveedor,
           folio: folioString,
-          periodoId: finalPeriodoId 
+          tipoDte: detalle.tipoDTE
         },
         transaction
       });
@@ -338,7 +339,8 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
       }
 
       // Handle otros impuestos - clear and recreate if they exist
-      if (detalle.otrosImpuestos && detalle.otrosImpuestos.length > 0) {
+      // Only process if we have a valid detalleCompra record
+      if (detalleCompra && detalle.otrosImpuestos && detalle.otrosImpuestos.length > 0) {
         // Clear existing otros impuestos for this detalle
         await OtrosImpuestos.destroy({
           where: { detalleId: detalleCompra.detalleId },
@@ -354,7 +356,7 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
             codigo: otroImpuesto.codigo
           }, { transaction });
         }
-      } else if (existingDetalle) {
+      } else if (detalleCompra && existingDetalle) {
         // Clear otros impuestos if no longer present
         await OtrosImpuestos.destroy({
           where: { detalleId: detalleCompra.detalleId },
@@ -363,17 +365,30 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
       }
     }
 
-    // 8. Remove detalle_compras records that no longer exist in the new data
-    const newFolios = compras.detalleCompras.map(d => d.folio.toString());
-    await DetalleCompras.destroy({
-      where: {
-        periodoId: finalPeriodoId,
-        folio: {
-          [Op.notIn]: newFolios
-        }
-      },
+    // 8. Remove detalle_compras records that no longer exist in the new data for this period
+    // We need to be careful here because folios are globally unique, but we only want to remove
+    // records from this specific period
+    const existingFoliosForPeriod = await DetalleCompras.findAll({
+      where: { periodoId: finalPeriodoId },
+      attributes: ['folio'],
       transaction
     });
+    
+    const existingFoliosArray = existingFoliosForPeriod.map(d => d.folio);
+    const newFolios = compras.detalleCompras.map(d => d.folio.toString());
+    const foliosToRemove = existingFoliosArray.filter(folio => !newFolios.includes(folio));
+    
+    if (foliosToRemove.length > 0) {
+      await DetalleCompras.destroy({
+        where: {
+          periodoId: finalPeriodoId,
+          folio: {
+            [Op.in]: foliosToRemove
+          }
+        },
+        transaction
+      });
+    }
 
     await transaction.commit();
     console.log(`Successfully stored SII data for period ${caratula.periodo}`);

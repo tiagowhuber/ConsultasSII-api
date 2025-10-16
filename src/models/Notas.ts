@@ -26,9 +26,16 @@ export class Notas extends Model {
   declare notaId: number;
 
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.INTEGER,
     allowNull: false,
-    unique: true
+    unique: true,
+    field: 'detalle_id'
+  })
+  declare detalleId: number;
+
+  @Column({
+    type: DataType.BIGINT,
+    allowNull: false
   })
   declare folio: string;
 

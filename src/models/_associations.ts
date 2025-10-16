@@ -26,17 +26,15 @@ export const initializeAssociations = () => {
   DetalleCompras.belongsTo(Proveedor, { foreignKey: 'rutProveedor', as: 'proveedor' });
   DetalleCompras.hasMany(OtrosImpuestos, { foreignKey: 'detalleId', as: 'otrosImpuestos' });
   
-  // Optional association with Notas - using folio as matching field
+  // Association with Notas - using detalleId as proper foreign key
   DetalleCompras.hasOne(Notas, { 
-    foreignKey: 'folio', 
-    sourceKey: 'folio', 
-    as: 'nota',
-    constraints: false // Disable foreign key constraints to make it more flexible
+    foreignKey: 'detalleId', 
+    as: 'nota'
   });
   
   // OtrosImpuestos associations
   OtrosImpuestos.belongsTo(DetalleCompras, { foreignKey: 'detalleId', as: 'detalleCompra' });
   
   // Notas associations
-  Notas.belongsTo(DetalleCompras, { foreignKey: 'folio', targetKey: 'folio', as: 'detalleCompra' });
+  Notas.belongsTo(DetalleCompras, { foreignKey: 'detalleId', as: 'detalleCompra' });
 };
