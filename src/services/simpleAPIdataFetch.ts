@@ -1,4 +1,7 @@
 import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import type { FormRequest, FormResponse } from '../types/api.js';
 import { 
   Empresa, 
@@ -13,6 +16,10 @@ import {
 import { Transaction, Op } from 'sequelize';
 import { notificationService, type NewRecordNotification } from './notificationService.js';
 
+// Get the directory path for reading mock files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Create axios instance
 const api = axios.create({
   baseURL: 'https://servicios.simpleapi.cl',
@@ -22,494 +29,35 @@ const api = axios.create({
   },
 });
 
-// Mock response for testing (use by setting USE_MOCK=true in env)
-const MOCK_RESPONSE: FormResponse = {
-  caratula: {
-    rutEmpresa: '77147627-9',
-    nombreMes: 'Agosto',
-    mes: 8,
-    anio: 2025,
-    dia: null,
-    periodo: '202508'
-  },
-  compras: {
-    resumenes: [
-      {
-        tipoDte: 33,
-        tipoDteString: 'FACTURA ELECTRÓNICA',
-        totalDocumentos: 11,
-        montoExento: 0,
-        montoNeto: 363885,
-        ivaRecuperable: 69141,
-        ivaUsoComun: 0,
-        ivaNoRecuperable: 0,
-        montoTotal: 450658,
-        estado: 'Confirmada'
+// Function to load mock response from colegio.txt file
+function loadMockResponse(): FormResponse {
+  try {
+    const mockFilePath = path.join(__dirname, '../mock_responses/colegio.txt');
+    const fileContent = fs.readFileSync(mockFilePath, 'utf-8');
+    return JSON.parse(fileContent) as FormResponse;
+  } catch (error) {
+    console.error('Error loading mock response from colegio.txt:', error);
+    // Fallback to a simple mock response if file can't be read
+    return {
+      caratula: {
+        rutEmpresa: '65145564-2',
+        nombreMes: 'Octubre',
+        mes: 10,
+        anio: 2025,
+        dia: null,
+        periodo: '202510'
       },
-      {
-        tipoDte: 34,
-        tipoDteString: 'FACTURA NO AFECTA O EXENTA ELECTRÓNICA',
-        totalDocumentos: 2,
-        montoExento: 3823862,
-        montoNeto: 0,
-        ivaRecuperable: 0,
-        ivaUsoComun: 0,
-        ivaNoRecuperable: 0,
-        montoTotal: 3823862,
-        estado: 'Confirmada'
+      compras: {
+        resumenes: [],
+        detalleCompras: []
+      },
+      ventas: {
+        resumenes: [],
+        detalleVentas: []
       }
-    ],
-    detalleCompras: [
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '76134941-4',
-        razonSocial: 'ADMIN. DE SUPERMERCADOS HIPER LIMITADA',
-        folio: 78555480,
-        fechaEmision: '2025-07-24T00:00:00',
-        fechaRecepcion: '2025-07-24T14:06:03',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 24183,
-        montoIvaRecuperable: 4595,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 28778,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '76609705-7',
-        razonSocial: 'COMERCIALIZADORA Y DISTRIBUIDORA PIZARRO Y HERMANOS LTDA',
-        folio: 807668,
-        fechaEmision: '2025-07-29T00:00:00',
-        fechaRecepcion: '2025-07-29T14:01:16',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 9698,
-        montoIvaRecuperable: 1843,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 11541,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77790860-K',
-        razonSocial: 'Masisa Partes y Piezas',
-        folio: 377759,
-        fechaEmision: '2025-08-04T00:00:00',
-        fechaRecepcion: '2025-08-04T15:21:06',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 6810,
-        montoIvaRecuperable: 1294,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 8104,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77790860-K',
-        razonSocial: 'Masisa Partes y Piezas',
-        folio: 377760,
-        fechaEmision: '2025-08-04T00:00:00',
-        fechaRecepcion: '2025-08-04T15:22:01',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 108504,
-        montoIvaRecuperable: 20616,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 129120,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '78627210-6',
-        razonSocial: 'HIPERMERCADOS TOTTUS S.A.',
-        folio: 10781420,
-        fechaEmision: '2025-08-08T00:00:00',
-        fechaRecepcion: '2025-08-08T11:48:37',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 8386,
-        montoIvaRecuperable: 1594,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 9980,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77215640-5',
-        razonSocial: 'ADMINISTRADORA DE VENTAS AL DETALLE LTDA',
-        folio: 21312952,
-        fechaEmision: '2025-08-08T00:00:00',
-        fechaRecepcion: '2025-08-08T17:38:57',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 31155,
-        montoIvaRecuperable: 5920,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 40765,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '3690',
-        tasaOtroImpuesto: '0',
-        codigoOtroImpuesto: 28,
-        estado: 'Confirmada',
-        fechaAcuse: null,
-        otrosImpuestos: [
-          {
-            valor: '3690',
-            tasa: '0',
-            codigo: 28
-          }
-        ]
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77862140-1',
-        razonSocial: 'DISTRIBUIDORA DE COMBUSTIBLES ARAUCANIA',
-        folio: 504245,
-        fechaEmision: '2025-08-12T00:00:00',
-        fechaRecepcion: '2025-08-12T10:59:10',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 26887,
-        montoIvaRecuperable: 5108,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 35129,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '3134',
-        tasaOtroImpuesto: '0',
-        codigoOtroImpuesto: 28,
-        estado: 'Confirmada',
-        fechaAcuse: null,
-        otrosImpuestos: [
-          {
-            valor: '3134',
-            tasa: '0',
-            codigo: 28
-          }
-        ]
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '76930995-0',
-        razonSocial: 'COMERCIAL JPF LIMITADA',
-        folio: 60130,
-        fechaEmision: '2025-08-12T00:00:00',
-        fechaRecepcion: '2025-08-12T16:28:48',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 13962,
-        montoIvaRecuperable: 2653,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 18289,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '1674',
-        tasaOtroImpuesto: '0',
-        codigoOtroImpuesto: 28,
-        estado: 'Confirmada',
-        fechaAcuse: null,
-        otrosImpuestos: [
-          {
-            valor: '1674',
-            tasa: '0',
-            codigo: 28
-          }
-        ]
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '76534612-6',
-        razonSocial: 'COMERCIAL Y SERVICIOS MURILLO LIMITADA',
-        folio: 521711,
-        fechaEmision: '2025-08-27T00:00:00',
-        fechaRecepcion: '2025-08-27T14:31:08',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 28627,
-        montoIvaRecuperable: 5439,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 40000,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '5934',
-        tasaOtroImpuesto: '0',
-        codigoOtroImpuesto: 28,
-        estado: 'Confirmada',
-        fechaAcuse: null,
-        otrosImpuestos: [
-          {
-            valor: '5934',
-            tasa: '0',
-            codigo: 28
-          }
-        ]
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '81201000-K',
-        razonSocial: 'CENCOSUD RETAIL S.A.',
-        folio: 25041961,
-        fechaEmision: '2025-08-30T00:00:00',
-        fechaRecepcion: '2025-08-30T16:02:51',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 35085,
-        montoIvaRecuperable: 6667,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 44952,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '1100',
-        tasaOtroImpuesto: '10',
-        codigoOtroImpuesto: 27,
-        estado: 'Confirmada',
-        fechaAcuse: null,
-        otrosImpuestos: [
-          {
-            valor: '1100',
-            tasa: '10',
-            codigo: 27
-          },
-          {
-            valor: '2100',
-            tasa: '18',
-            codigo: 271
-          }
-        ]
-      },
-      {
-        tipoDTEString: 'FACTURA ELECTRÓNICA',
-        tipoDTE: 33,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77029043-0',
-        razonSocial: 'Distribuidora y Comercializadora SALDAÑA ANDRADE Ltda',
-        folio: 47959,
-        fechaEmision: '2025-08-30T00:00:00',
-        fechaRecepcion: '2025-08-30T18:40:17',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 0,
-        montoNeto: 70588,
-        montoIvaRecuperable: 13412,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 84000,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA NO AFECTA O EXENTA ELECTRÓNICA',
-        tipoDTE: 34,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77266631-4',
-        razonSocial: 'PROGARANTIA S.A.G.R.',
-        folio: 106668,
-        fechaEmision: '2025-08-27T00:00:00',
-        fechaRecepcion: '2025-08-28T16:23:24',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 3746873,
-        montoNeto: 0,
-        montoIvaRecuperable: 0,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 3746873,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      },
-      {
-        tipoDTEString: 'FACTURA NO AFECTA O EXENTA ELECTRÓNICA',
-        tipoDTE: 34,
-        tipoCompra: 'Del Giro',
-        rutProveedor: '77266631-4',
-        razonSocial: 'PROGARANTIA S.A.G.R.',
-        folio: 106669,
-        fechaEmision: '2025-08-27T00:00:00',
-        fechaRecepcion: '2025-08-28T16:23:32',
-        acuseRecibo: 'No reclamado en plazo',
-        montoExento: 76989,
-        montoNeto: 0,
-        montoIvaRecuperable: 0,
-        montoIvaNoRecuperable: 0,
-        codigoIvaNoRecuperable: 0,
-        montoTotal: 76989,
-        montoNetoActivoFijo: 0,
-        ivaActivoFijo: 0,
-        ivaUsoComun: 0,
-        impuestoSinDerechoCredito: 0,
-        ivaNoRetenido: 0,
-        tabacosPuros: 0,
-        tabacosCigarrillos: 0,
-        tabacosElaborados: 0,
-        nceNdeFacturaCompra: 0,
-        valorOtroImpuesto: '',
-        tasaOtroImpuesto: '',
-        codigoOtroImpuesto: 0,
-        estado: 'Confirmada',
-        fechaAcuse: null
-      }
-    ]
-  },
-  ventas: {
-    resumenes: [],
-    detalleVentas: []
+    };
   }
-};
+}
 
 export async function fetchSIIData(month: string | number, year: string | number): Promise<FormResponse> {
   console.log(`fetchSIIData called for ${month}/${year}`);
@@ -524,11 +72,12 @@ export async function fetchSIIData(month: string | number, year: string | number
   console.log(`Request body prepared - Password set: ${requestBody.PasswordSII ? '✅' : '❌'}`);
   console.log(`API_KEY set: ${process.env.API_KEY ? '✅' : '❌'}`);
 
-  // If USE_MOCK=true, use the in-file mock response for testing
+  // If USE_MOCK=true, use the mock response from colegio.txt for testing
   if (process.env.USE_MOCK === 'true') {
-    console.log('Using MOCK_RESPONSE for fetchSIIData');
-    await storeSIIDataInDatabase(MOCK_RESPONSE);
-    return MOCK_RESPONSE;
+    console.log('Using mock response from colegio.txt for fetchSIIData');
+    const mockResponse = loadMockResponse();
+    await storeSIIDataInDatabase(mockResponse);
+    return mockResponse;
   }
 
   try {
@@ -867,10 +416,10 @@ export async function fetchSIIDataOnly(month: string | number, year: string | nu
     Ambiente: 1,
   };
 
-  // If USE_MOCK=true, return the in-file mock response for testing
+  // If USE_MOCK=true, return the mock response from colegio.txt for testing
   if (process.env.USE_MOCK === 'true') {
-    console.log('Using MOCK_RESPONSE for fetchSIIDataOnly');
-    return MOCK_RESPONSE;
+    console.log('Using mock response from colegio.txt for fetchSIIDataOnly');
+    return loadMockResponse();
   }
 
   const response = await api.post<FormResponse>(
