@@ -183,6 +183,22 @@ CREATE TABLE IF NOT EXISTS dte.detalle_ventas (
     CONSTRAINT fk_detalle_ventas_tipo_dte FOREIGN KEY (tipo_dte) REFERENCES dte.tipo_dte (tipo_dte)
 );
 
+-- API call counter table
+CREATE TABLE IF NOT EXISTS dte.api_call_counter (
+    counter_id SERIAL PRIMARY KEY,
+    function_name VARCHAR(100) NOT NULL,
+    call_count BIGINT NOT NULL DEFAULT 0,
+    last_called_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (function_name)
+);
+
+-- Insert initial counter for fetchSIIData
+INSERT INTO dte.api_call_counter (function_name, call_count) 
+VALUES ('fetchSIIData', 0)
+ON CONFLICT (function_name) DO NOTHING;
+
 -- Create indexes for better performance
 CREATE INDEX idx_periodo_rut_empresa ON dte.periodo (rut_empresa);
 CREATE INDEX idx_periodo_anio_mes ON dte.periodo (anio, mes);
@@ -196,6 +212,7 @@ CREATE INDEX idx_detalle_compras_folio ON dte.detalle_compras (folio);
 CREATE INDEX idx_outros_impuestos_detalle ON dte.otros_impuestos (detalle_id);
 CREATE INDEX idx_notas_detalle_id ON dte.notas (detalle_id);
 CREATE INDEX idx_notas_folio ON dte.notas (folio); -- Keep folio index for backward compatibility
+CREATE INDEX idx_api_call_counter_function_name ON dte.api_call_counter (function_name);
 
 -- Insert common DTE types
 INSERT INTO dte.tipo_dte (tipo_dte, descripcion, categoria) VALUES
@@ -228,3 +245,4 @@ CREATE TRIGGER update_detalle_compras_updated_at BEFORE UPDATE ON dte.detalle_co
 CREATE TRIGGER update_notas_updated_at BEFORE UPDATE ON dte.notas FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
 CREATE TRIGGER update_resumen_ventas_updated_at BEFORE UPDATE ON dte.resumen_ventas FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
 CREATE TRIGGER update_detalle_ventas_updated_at BEFORE UPDATE ON dte.detalle_ventas FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();
+CREATE TRIGGER update_api_call_counter_updated_at BEFORE UPDATE ON dte.api_call_counter FOR EACH ROW EXECUTE FUNCTION dte.update_updated_at_column();

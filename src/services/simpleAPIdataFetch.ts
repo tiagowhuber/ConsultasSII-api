@@ -11,6 +11,7 @@ import {
   ResumenCompras, 
   DetalleCompras, 
   OtrosImpuestos,
+  ApiCallCounter,
   sequelize 
 } from '../models/index.js';
 import { Transaction, Op } from 'sequelize';
@@ -61,6 +62,15 @@ function loadMockResponse(): FormResponse {
 
 export async function fetchSIIData(month: string | number, year: string | number): Promise<FormResponse> {
   console.log(`fetchSIIData called for ${month}/${year}`);
+  
+  // Increment the API call counter
+  try {
+    await ApiCallCounter.incrementCounter('fetchSIIData');
+    console.log('API call counter incremented for fetchSIIData');
+  } catch (error) {
+    console.error('Failed to increment API call counter:', error);
+    // Don't throw error - this shouldn't stop the main function
+  }
   
   const requestBody: FormRequest = {
     RutUsuario: '65145564-2',

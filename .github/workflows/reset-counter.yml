@@ -1,0 +1,40 @@
+name: Reset API Call Counter
+
+on:
+  schedule:
+    # Run at 00:00 UTC on the 1st day of every month
+    - cron: '0 0 1 * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  reset-counter:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Reset API Call Counter
+        run: |
+          echo "Resetting API call counter..."
+          response=$(curl -X POST "${{ secrets.API_BASE_URL }}/api/sii/reset-counter" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: ${{ secrets.SCHEDULER_AUTH_TOKEN }}" \
+            -w "\n%{http_code}" \
+            -s)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+          
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Counter reset successfully!"
+          else
+            echo "❌ Failed to reset counter"
+            exit 1
+          fi
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Failed to reset API call counter on $(date)"
+          # Add notification logic here (email, Slack, etc.) if needed

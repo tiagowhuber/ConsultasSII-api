@@ -7,6 +7,7 @@ export { ResumenCompras } from './ResumenCompras.js';
 export { DetalleCompras } from './DetalleCompras.js';
 export { OtrosImpuestos } from './OtrosImpuestos.js';
 export { Notas } from './Notas.js';
+export { ApiCallCounter } from './ApiCallCounter.js';
 
 // Import sequelize instance
 import sequelize from '../config/db.js';
@@ -18,6 +19,7 @@ import { ResumenCompras } from './ResumenCompras.js';
 import { DetalleCompras } from './DetalleCompras.js';
 import { OtrosImpuestos } from './OtrosImpuestos.js';
 import { Notas } from './Notas.js';
+import { ApiCallCounter } from './ApiCallCounter.js';
 import { initializeAssociations } from './_associations.js';
 
 // Initialize models
@@ -29,7 +31,8 @@ const models = {
   ResumenCompras,
   DetalleCompras,
   OtrosImpuestos,
-  Notas
+  Notas,
+  ApiCallCounter
 };
 
 // Add models to sequelize instance manually
@@ -41,7 +44,8 @@ sequelize.addModels([
   ResumenCompras,
   DetalleCompras,
   OtrosImpuestos,
-  Notas
+  Notas,
+  ApiCallCounter
 ]);
 
 // Initialize associations

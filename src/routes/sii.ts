@@ -1,5 +1,5 @@
 import express from 'express';
-import { fetchAndStore, fetchOnly, storeData, testEndpoint } from '../controllers/SII.controller.js';
+import { fetchAndStore, fetchOnly, storeData, testEndpoint, getCallCount, resetCounter } from '../controllers/SII.controller.js';
 import { authenticateScheduler } from '../middleware/scheduler-auth.js';
 
 const router = express.Router();
@@ -15,5 +15,11 @@ router.get('/fetch/:year/:month', fetchOnly);
 
 // Route to store existing SII data
 router.post('/store', storeData);
+
+// Route to get API call counter information
+router.get('/call-count', getCallCount);
+
+// Route to reset API call counter (protected for scheduler)
+router.post('/reset-counter', authenticateScheduler, resetCounter);
 
 export default router;
