@@ -113,7 +113,7 @@ export const getResumenCompras = async (req: Request, res: Response): Promise<vo
 export const getDetalleCompras = async (req: Request, res: Response): Promise<void> => {
   try {
     const { periodoId } = req.params;
-    const { rutProveedor, tipoDte, fechaInicio, fechaFin, page = 1, limit = 50 } = req.query;
+    const { rutProveedor, tipoDte, fechaInicio, fechaFin, page = 1, limit = 1000 } = req.query;
     
     const whereClause: any = {};
     if (periodoId) whereClause.periodoId = periodoId;
