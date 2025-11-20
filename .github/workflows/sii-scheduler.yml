@@ -5,12 +5,12 @@ on:
     # Schedule for Chilean timezone (UTC-3 in winter, UTC-4 in summer)
     # 8AM Chilean = 11AM UTC (winter) / 12PM UTC (summer) - using winter time
     - cron: '0 11 * * 1-5'
-    # 11AM Chilean = 2PM UTC (winter) / 3PM UTC (summer)
-    - cron: '0 14 * * 1-5'
-    # 1PM Chilean = 4PM UTC (winter) / 5PM UTC (summer)
-    - cron: '0 16 * * 1-5'
-    # 4PM Chilean = 7PM UTC (winter) / 8PM UTC (summer)
-    - cron: '0 19 * * 1-5'
+    # # 11AM Chilean = 2PM UTC (winter) / 3PM UTC (summer)
+    # - cron: '0 14 * * 1-5'
+    # # 1PM Chilean = 4PM UTC (winter) / 5PM UTC (summer)
+    # - cron: '0 16 * * 1-5'
+    # # 4PM Chilean = 7PM UTC (winter) / 8PM UTC (summer)
+    # - cron: '0 19 * * 1-5'
   
   # Allow manual triggering
   workflow_dispatch:
