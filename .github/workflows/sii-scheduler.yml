@@ -2,15 +2,58 @@ name: SII Data Scheduler
 
 on:
   schedule:
-    # Schedule for Chilean timezone (UTC-3 in winter, UTC-4 in summer)
-    # 8AM Chilean = 11AM UTC (winter) / 12PM UTC (summer) - using winter time
-    - cron: '0 11 * * 1-5'
-    # # 11AM Chilean = 2PM UTC (winter) / 3PM UTC (summer)
-    # - cron: '0 14 * * 1-5'
-    # # 1PM Chilean = 4PM UTC (winter) / 5PM UTC (summer)
-    # - cron: '0 16 * * 1-5'
-    # # 4PM Chilean = 7PM UTC (winter) / 8PM UTC (summer)
-    # - cron: '0 19 * * 1-5'
+    # 35 runs per day, Mon-Sat, 7am-9pm Chilean time (UTC-3 summer)
+    # 7am Chilean = 10:00 UTC | 9pm Chilean = 00:00 UTC (next day)
+    # Runs approximately every 24-25 minutes
+    
+    # Morning runs (7am-9am Chilean)
+    - cron: '0 10 * * 1-6'    # 7:00am
+    - cron: '24 10 * * 1-6'   # 7:24am
+    - cron: '48 10 * * 1-6'   # 7:48am
+    
+    # Mid-morning runs (9am-11am Chilean)
+    - cron: '12 11 * * 1-6'   # 8:12am
+    - cron: '36 11 * * 1-6'   # 8:36am
+    - cron: '0 12 * * 1-6'    # 9:00am
+    - cron: '24 12 * * 1-6'   # 9:24am
+    - cron: '48 12 * * 1-6'   # 9:48am
+    
+    # Late morning runs (11am-1pm Chilean)
+    - cron: '12 13 * * 1-6'   # 10:12am
+    - cron: '36 13 * * 1-6'   # 10:36am
+    - cron: '0 14 * * 1-6'    # 11:00am
+    - cron: '24 14 * * 1-6'   # 11:24am
+    - cron: '48 14 * * 1-6'   # 11:48am
+    
+    # Afternoon runs (1pm-3pm Chilean)
+    - cron: '12 15 * * 1-6'   # 12:12pm
+    - cron: '36 15 * * 1-6'   # 12:36pm
+    - cron: '0 16 * * 1-6'    # 1:00pm
+    - cron: '24 16 * * 1-6'   # 1:24pm
+    - cron: '48 16 * * 1-6'   # 1:48pm
+    
+    # Mid-afternoon runs (3pm-5pm Chilean)
+    - cron: '12 17 * * 1-6'   # 2:12pm
+    - cron: '36 17 * * 1-6'   # 2:36pm
+    - cron: '0 18 * * 1-6'    # 3:00pm
+    - cron: '24 18 * * 1-6'   # 3:24pm
+    - cron: '48 18 * * 1-6'   # 3:48pm
+    
+    # Late afternoon runs (5pm-7pm Chilean)
+    - cron: '12 19 * * 1-6'   # 4:12pm
+    - cron: '36 19 * * 1-6'   # 4:36pm
+    - cron: '0 20 * * 1-6'    # 5:00pm
+    - cron: '24 20 * * 1-6'   # 5:24pm
+    - cron: '48 20 * * 1-6'   # 5:48pm
+    
+    # Evening runs (7pm-9pm Chilean)
+    - cron: '12 21 * * 1-6'   # 6:12pm
+    - cron: '36 21 * * 1-6'   # 6:36pm
+    - cron: '0 22 * * 1-6'    # 7:00pm
+    - cron: '24 22 * * 1-6'   # 7:24pm
+    - cron: '48 22 * * 1-6'   # 7:48pm
+    - cron: '12 23 * * 1-6'   # 8:12pm
+    - cron: '36 23 * * 1-6'   # 8:36pm
   
   # Allow manual triggering
   workflow_dispatch:
@@ -54,21 +97,21 @@ jobs:
             echo "Scheduled trigger: $(date +%Y)/$(date +%m)"
           fi
           
-      - name: Check if business day
-        id: business_day
+      - name: Check if valid day
+        id: valid_day
         run: |
           # Get day of week (1=Monday, 7=Sunday)
           DAY_OF_WEEK=$(date +%u)
-          if [ $DAY_OF_WEEK -le 5 ]; then
-            echo "is_business_day=true" >> $GITHUB_OUTPUT
-            echo "Today is a business day (day $DAY_OF_WEEK)"
+          if [ $DAY_OF_WEEK -le 6 ]; then
+            echo "is_valid_day=true" >> $GITHUB_OUTPUT
+            echo "✅ Running on day $DAY_OF_WEEK (Monday-Saturday)"
           else
-            echo "is_business_day=false" >> $GITHUB_OUTPUT
-            echo "⏭Today is weekend (day $DAY_OF_WEEK), skipping"
+            echo "is_valid_day=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Sunday (day $DAY_OF_WEEK), skipping"
           fi
       
       - name: Trigger SII Data Fetch
-        if: steps.business_day.outputs.is_business_day == 'true' || github.event_name == 'workflow_dispatch'
+        if: steps.valid_day.outputs.is_valid_day == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           echo "Starting SII data fetch for ${{ steps.date.outputs.year }}/${{ steps.date.outputs.month }}"
           
