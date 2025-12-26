@@ -99,10 +99,10 @@ export class ResumenCompras extends Model {
   montoTotal!: string;
 
   @Column({
-    type: DataType.ENUM('Confirmada', 'Pendiente', 'Rechazada'),
+    type: DataType.STRING(20),
     allowNull: false
   })
-  estado!: 'Confirmada' | 'Pendiente' | 'Rechazada';
+  estado!: string;
 
   @CreatedAt
   @Column({

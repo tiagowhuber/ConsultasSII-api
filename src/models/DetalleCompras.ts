@@ -225,10 +225,10 @@ export class DetalleCompras extends Model {
   declare codigoOtroImpuesto?: number;
 
   @Column({
-    type: DataType.ENUM('Confirmada', 'Pendiente', 'Rechazada'),
+    type: DataType.STRING(20),
     allowNull: false
   })
-  declare estado: 'Confirmada' | 'Pendiente' | 'Rechazada';
+  declare estado: string;
 
   @CreatedAt
   @Column({

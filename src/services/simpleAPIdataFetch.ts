@@ -257,7 +257,7 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
         ivaUsoComun: resumen.ivaUsoComun.toString(),
         ivaNoRecuperable: resumen.ivaNoRecuperable.toString(),
         montoTotal: resumen.montoTotal.toString(),
-        estado: resumen.estado as 'Confirmada' | 'Pendiente' | 'Rechazada'
+        estado: resumen.estado
       }, { transaction });
     }
 
@@ -306,7 +306,7 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
         valorOtroImpuesto: detalle.valorOtroImpuesto || null,
         tasaOtroImpuesto: detalle.tasaOtroImpuesto || null,
         codigoOtroImpuesto: detalle.codigoOtroImpuesto || 0,
-        estado: detalle.estado as 'Confirmada' | 'Pendiente' | 'Rechazada'
+        estado: detalle.estado
       };
 
       let detalleCompra;
