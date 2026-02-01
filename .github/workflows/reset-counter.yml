@@ -16,7 +16,7 @@ jobs:
           echo "Resetting API call counter..."
           response=$(curl -X POST "${{ secrets.API_BASE_URL }}/api/sii/reset-counter" \
             -H "Content-Type: application/json" \
-            -H "Authorization: ${{ secrets.SCHEDULER_AUTH_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.SCHEDULER_SECRET }}" \
             -w "\n%{http_code}" \
             -s)
           
