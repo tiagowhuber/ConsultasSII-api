@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { authenticateScheduler } from '../middleware/scheduler-auth.js';
 
 const router = express.Router();
 
 // Health check endpoint (public)
-router.get('/health', (req, res) => {
+router.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -16,7 +16,7 @@ router.get('/health', (req, res) => {
 });
 
 // Status endpoint with authentication
-router.get('/status', authenticateScheduler, (req, res) => {
+router.get('/status', authenticateScheduler, (req: Request, res: Response) => {
   res.json({
     scheduler: {
       type: 'GitHub Actions',
@@ -43,7 +43,7 @@ router.get('/status', authenticateScheduler, (req, res) => {
 });
 
 // Test endpoint (development only) to verify authentication
-router.post('/test', authenticateScheduler, (req, res) => {
+router.post('/test', authenticateScheduler, (req: Request, res: Response) => {
   if (process.env.NODE_ENV === 'production') {
     res.status(403).json({ 
       error: 'Test endpoint is not available in production environment' 

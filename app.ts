@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 // Load environment variables immediately
 dotenv.config();
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import dteRoutes from './src/routes/dte.js';
@@ -44,7 +44,7 @@ app.use(cors({
 app.use(express.json());
 
 // Root endpoint
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.json({
     message: 'SII Data API is running',
     version: '1.0.0',
