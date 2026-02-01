@@ -7,8 +7,10 @@ const router = express.Router();
 // Test endpoint (for debugging)
 router.get('/test', testEndpoint);
 
-// Route to fetch and store SII data (protected for scheduler in production)
-router.post('/fetch-and-store/:year/:month', authenticateScheduler, fetchAndStore);
+// Route to fetch and store SII data
+// Note: Authentication removed to allow frontend triggering. 
+// Ideally, this should be protected by user authentication or a specific API key in the future.
+router.post('/fetch-and-store/:year/:month', fetchAndStore);
 
 // Route to only fetch SII data (no storage)
 router.get('/fetch/:year/:month', fetchOnly);
