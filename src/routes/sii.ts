@@ -10,6 +10,9 @@ router.get('/test', testEndpoint);
 // Route to fetch and store SII data (protected for scheduler in production)
 router.post('/fetch-and-store/:year/:month', authenticateScheduler, fetchAndStore);
 
+// Route to fetch and store SII data (PUBLIC for manual frontend requests)
+router.post('/fetch-and-store-manual/:year/:month', fetchAndStore);
+
 // Route to only fetch SII data (no storage)
 router.get('/fetch/:year/:month', fetchOnly);
 
