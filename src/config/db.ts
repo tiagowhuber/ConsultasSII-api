@@ -1,6 +1,9 @@
 import { Sequelize } from 'sequelize-typescript';
 import pg from 'pg';
 
+const isProduction = process.env.NODE_ENV === 'production';
+const useSSL = isProduction || process.env.DB_USE_SSL === 'true';
+
 const sequelize = new Sequelize({
   database: process.env.PGDATABASE || 'postgres',
   dialect: 'postgres',
@@ -9,6 +12,12 @@ const sequelize = new Sequelize({
   password: process.env.PGPASSWORD,
   host: process.env.PGHOST || 'localhost',
   port: Number(process.env.PGPORT) || 5431,
+  dialectOptions: useSSL ? {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  } : {},
   define: {
     schema: 'dte',
     timestamps: true,

@@ -1,7 +1,10 @@
 import 'reflect-metadata';
+import dotenv from 'dotenv';
+// Load environment variables immediately
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { createServer } from 'http';
 import dteRoutes from './src/routes/dte.js';
 import siiRoutes from './src/routes/sii.js';
@@ -10,9 +13,6 @@ import schedulerRoutes from './src/routes/scheduler.js';
 import { testConnection } from './src/config/db.js';
 import { notificationService } from './src/services/notificationService.js';
 import './src/models/index.js'; // Initialize models
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const server = createServer(app);
