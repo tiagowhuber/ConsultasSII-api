@@ -8,6 +8,7 @@ import {
   getAllProveedores,
   getAllTiposDte
 } from '../controllers/Dte.controller.js';
+import { getOfficialPdf } from '../controllers/PdfOficial.controller.js';
 
 const router = Router();
 
@@ -31,5 +32,8 @@ router.get('/proveedores', getAllProveedores);
 
 // Tipo DTE routes
 router.get('/tipos-dte', getAllTiposDte);
+
+// Official PDF generation (requires .pfx certificate configured in .env)
+router.post('/pdf-oficial', getOfficialPdf);
 
 export default router;
