@@ -11,7 +11,7 @@ const sequelize = new Sequelize({
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   host: process.env.PGHOST || 'localhost',
-  port: Number(process.env.PGPORT) || 5431,
+  port: Number(process.env.PGPORT) || 5430,
   dialectOptions: useSSL ? {
     ssl: {
       require: true,

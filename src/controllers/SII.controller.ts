@@ -112,7 +112,7 @@ export const testEndpoint = async (req: Request, res: Response): Promise<void> =
       PGUSER: process.env.PGUSER ? '✅ Set' : '❌ Missing',
       PGPASSWORD: process.env.PGPASSWORD ? '✅ Set' : '❌ Missing',
       PGHOST: process.env.PGHOST || 'localhost',
-      PGPORT: process.env.PGPORT || '5431'
+      PGPORT: process.env.PGPORT || '5430'
     };
 
     // Test database connection

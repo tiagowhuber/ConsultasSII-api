@@ -58,6 +58,13 @@ export class Notas extends Model {
   })
   declare pagado: boolean;
 
+  @Column({
+    type: DataType.STRING(50),
+    allowNull: true,
+    field: 'forma_pago'
+  })
+  declare formaPago: string | null;
+
   @CreatedAt
   @Column({
     field: 'created_at'

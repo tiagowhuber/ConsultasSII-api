@@ -129,11 +129,15 @@ CREATE TABLE IF NOT EXISTS dte.notas (
     comentario TEXT,
     contabilizado BOOLEAN NOT NULL DEFAULT FALSE,
     pagado BOOLEAN NOT NULL DEFAULT FALSE,
+    forma_pago VARCHAR(50) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notas_detalle_id FOREIGN KEY (detalle_id) REFERENCES dte.detalle_compras (detalle_id) ON DELETE CASCADE,
     UNIQUE (detalle_id) -- One note per detalle_compras record
 );
+
+-- Migration: run this if the table already exists
+-- ALTER TABLE dte.notas ADD COLUMN IF NOT EXISTS forma_pago VARCHAR(50);
 
 -- Other taxes detail (normalized from the otrosImpuestos array)
 CREATE TABLE IF NOT EXISTS dte.otros_impuestos (

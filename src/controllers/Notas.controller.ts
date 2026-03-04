@@ -63,7 +63,7 @@ export const getNotaByFolio = async (req: Request, res: Response): Promise<void>
 // Create nota
 export const createNota = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { folio, comentario, contabilizado, pagado } = req.body;
+    const { folio, comentario, contabilizado, pagado, formaPago } = req.body;
     
     // Check if detalle_compras exists
     const detalleCompra = await DetalleCompras.findOne({
@@ -90,7 +90,8 @@ export const createNota = async (req: Request, res: Response): Promise<void> => 
       folio,
       comentario,
       contabilizado: contabilizado || false,
-      pagado: pagado || false
+      pagado: pagado || false,
+      formaPago: formaPago || null
     });
     
     res.status(201).json(nota);
@@ -104,7 +105,7 @@ export const createNota = async (req: Request, res: Response): Promise<void> => 
 export const updateNota = async (req: Request, res: Response): Promise<void> => {
   try {
     const { folio } = req.params;
-    const { comentario, contabilizado, pagado } = req.body;
+    const { comentario, contabilizado, pagado, formaPago } = req.body;
     
     // First find the detalle_compras record to get the detalleId
     const detalleCompra = await DetalleCompras.findOne({
@@ -129,6 +130,7 @@ export const updateNota = async (req: Request, res: Response): Promise<void> => 
     if (comentario !== undefined) updateData.comentario = comentario;
     if (contabilizado !== undefined) updateData.contabilizado = contabilizado;
     if (pagado !== undefined) updateData.pagado = pagado;
+    if (formaPago !== undefined) updateData.formaPago = formaPago;
     
     await nota.update(updateData);
     
@@ -280,6 +282,69 @@ export const updateNotaPagado = async (req: Request, res: Response): Promise<voi
     });
   } catch (error) {
     console.error('Error updating pagado status:', error);
+    res.status(500).json({ error: 'Database error' });
+  }
+};
+
+// Update nota forma de pago
+export const updateNotaFormaPago = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { folio } = req.params;
+    const { formaPago } = req.body;
+
+    // Validate: must be a string or null
+    if (formaPago !== null && formaPago !== undefined && typeof formaPago !== 'string') {
+      res.status(400).json({ error: 'formaPago must be a string or null' });
+      return;
+    }
+
+    const VALID_FORMAS_PAGO = [
+      'CAJA CHICA', 'DEBITO', 'TRANSFERENCIA', 'CHEQUE',
+      'FONDO POR RENDIR', 'PAC Y CARGO BANCO', 'ANULA',
+      'REBAJA', 'OTRO', 'NO CORRESPONDE'
+    ];
+
+    if (formaPago !== null && formaPago !== undefined && !VALID_FORMAS_PAGO.includes(formaPago)) {
+      res.status(400).json({ error: 'Invalid formaPago value' });
+      return;
+    }
+
+    // Check if detalle_compras exists
+    const detalleCompra = await DetalleCompras.findOne({
+      where: { folio }
+    });
+
+    if (!detalleCompra) {
+      res.status(400).json({ error: 'DetalleCompras not found' });
+      return;
+    }
+
+    let nota = await Notas.findOne({
+      where: { detalleId: detalleCompra.detalleId }
+    });
+
+    if (!nota) {
+      // Create nota if it doesn't exist
+      nota = await Notas.create({
+        detalleId: detalleCompra.detalleId,
+        folio,
+        comentario: null,
+        contabilizado: false,
+        pagado: false,
+        formaPago: formaPago || null
+      });
+    } else {
+      // Update existing nota
+      await nota.update({ formaPago: formaPago || null });
+    }
+
+    res.json({
+      message: 'Forma de pago updated successfully',
+      folio,
+      formaPago: formaPago || null
+    });
+  } catch (error) {
+    console.error('Error updating forma de pago:', error);
     res.status(500).json({ error: 'Database error' });
   }
 };
