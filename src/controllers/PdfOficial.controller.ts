@@ -20,10 +20,11 @@ const simpleApiClient = axios.create({
  * the digital certificate is not yet configured.
  */
 export const getOfficialPdf = async (req: Request, res: Response): Promise<void> => {
-  const certPath = process.env.CERT_PATH;
-  const certPassword = process.env.CERT_PASSWORD ?? '';
+  const certPath = process.env.PFX_PATH;
+  const certPassword = process.env.PFX_PASSWORD ?? '';
+  const pfxRut = process.env.PFX_RUT || process.env.SII_RUT || '';
   const siiRut = process.env.SII_RUT ?? '65145564-2';
-  const siiPassword = process.env.SII_PASSWORD ?? '';
+  const siiPassword = process.env.PFX_PASSWORD ?? '';
   const apiKey = process.env.API_KEY ?? '';
 
   if (!certPath) {
@@ -56,7 +57,7 @@ export const getOfficialPdf = async (req: Request, res: Response): Promise<void>
       certificado: {
         ruta: certPath,
         password: certPassword,
-        rut: siiRut,
+        rut: pfxRut,
       },
       fechaDTE: new Date(fechaEmision).toISOString(),
       total: montoTotal,
