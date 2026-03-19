@@ -1,6 +1,6 @@
 export interface FormRequest {
-  RutUsuario: string;
-  PasswordSII: string;
+  RutCertificado: string;
+  Password: string;
   RutEmpresa: string;
   Ambiente: number;
 }

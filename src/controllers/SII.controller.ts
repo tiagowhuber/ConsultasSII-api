@@ -7,7 +7,7 @@ export const fetchAndStore = async (req: Request, res: Response): Promise<void> 
     console.log(`fetchAndStore called for period: ${req.params.year}/${req.params.month}`);
     console.log(`Headers: ${JSON.stringify(req.headers)}`);
     console.log(`Environment check - API_KEY: ${process.env.API_KEY ? '✅ Set' : '❌ Missing'}`);
-    console.log(`Environment check - SII_PASSWORD: ${process.env.SII_PASSWORD ? '✅ Set' : '❌ Missing'}`);
+    console.log(`Environment check - PFX_PASSWORD: ${process.env.PFX_PASSWORD ? '✅ Set' : '❌ Missing'}`);
     console.log(`Environment check - USE_MOCK: ${process.env.USE_MOCK || 'false'}`);
     
     const { month, year } = req.params;
@@ -105,7 +105,7 @@ export const testEndpoint = async (req: Request, res: Response): Promise<void> =
     // Check environment variables
     const envCheck = {
       API_KEY: process.env.API_KEY ? '✅ Set' : '❌ Missing',
-      SII_PASSWORD: process.env.SII_PASSWORD ? '✅ Set' : '❌ Missing',
+      PFX_PASSWORD: process.env.PFX_PASSWORD ? '✅ Set' : '❌ Missing',
       USE_MOCK: process.env.USE_MOCK || 'false',
       NODE_ENV: process.env.NODE_ENV || 'development',
       PGDATABASE: process.env.PGDATABASE ? '✅ Set' : '❌ Missing',

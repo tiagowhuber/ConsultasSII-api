@@ -2,7 +2,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import type { FormRequest, FormResponse } from '../types/api.js';
+import type { FormResponse } from '../types/api.js';
 import { 
   Empresa, 
   Periodo, 
@@ -22,12 +22,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Create axios instance
+// Note: no default Content-Type — FormData sets multipart/form-data with boundary automatically
 const api = axios.create({
   baseURL: 'https://servicios.simpleapi.cl',
   timeout: 300000, // 5 minutes for API calls
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Function to load mock response from colegio.txt file
@@ -72,14 +70,8 @@ export async function fetchSIIData(month: string | number, year: string | number
     // Don't throw error - this shouldn't stop the main function
   }
   
-  const requestBody: FormRequest = {
-    RutUsuario: '65145564-2',
-    PasswordSII: process.env.SII_PASSWORD || '',
-    RutEmpresa: '65145564-2',
-    Ambiente: 1,
-  };
-
-  console.log(`Request body prepared - Password set: ${requestBody.PasswordSII ? '✅' : '❌'}`);
+  console.log(`Request body prepared - PFX_PASSWORD set: ${process.env.PFX_PASSWORD ? '✅' : '❌'}`);
+  console.log(`PFX_PATH set: ${process.env.PFX_PATH ? '✅' : '❌'}`);
   console.log(`API_KEY set: ${process.env.API_KEY ? '✅' : '❌'}`);
 
   // If USE_MOCK=true, use the mock response from colegio.txt for testing
@@ -90,11 +82,24 @@ export async function fetchSIIData(month: string | number, year: string | number
     return mockResponse;
   }
 
+  const pfxPath = process.env.PFX_PATH || '';
+  const pfxBuffer = fs.readFileSync(pfxPath);
+  const pfxBlob = new Blob([pfxBuffer], { type: 'application/x-pkcs12' });
+  const jsonInput = JSON.stringify({
+    RutCertificado: process.env.PFX_RUT || process.env.SII_RUT || '',
+    Password: process.env.PFX_PASSWORD || '',
+    RutEmpresa: process.env.SII_RUT || '',
+    Ambiente: 1,
+  });
+  const form = new FormData();
+  form.append('input', jsonInput);
+  form.append('files', pfxBlob, path.basename(pfxPath));
+
   try {
     console.log(`Making API call to simpleapi.cl for ${month}/${year}`);
     const response = await api.post<FormResponse>(
       `/api/RCV/compras/${month}/${year}`,
-      requestBody,
+      form,
       {
         headers: {
           Authorization: process.env.API_KEY || '',
@@ -434,22 +439,28 @@ async function storeSIIDataInDatabase(data: FormResponse): Promise<void> {
 
 // Separate function to only fetch data without storing
 export async function fetchSIIDataOnly(month: string | number, year: string | number): Promise<FormResponse> {
-  const requestBody: FormRequest = {
-    RutUsuario: '65145564-2',
-    PasswordSII: process.env.SII_PASSWORD || '',
-    RutEmpresa: '65145564-2',
-    Ambiente: 1,
-  };
-
   // If USE_MOCK=true, return the mock response from colegio.txt for testing
   if (process.env.USE_MOCK === 'true') {
     console.log('Using mock response from colegio.txt for fetchSIIDataOnly');
     return loadMockResponse();
   }
 
+  const pfxPath = process.env.PFX_PATH || '';
+  const pfxBuffer = fs.readFileSync(pfxPath);
+  const pfxBlob = new Blob([pfxBuffer], { type: 'application/x-pkcs12' });
+  const jsonInput = JSON.stringify({
+    RutCertificado: process.env.PFX_RUT || process.env.SII_RUT || '',
+    Password: process.env.PFX_PASSWORD || '',
+    RutEmpresa: process.env.SII_RUT || '',
+    Ambiente: 1,
+  });
+  const form = new FormData();
+  form.append('input', jsonInput);
+  form.append('files', pfxBlob, path.basename(pfxPath));
+
   const response = await api.post<FormResponse>(
     `/api/RCV/compras/${month}/${year}`,
-    requestBody,
+    form,
     {
       headers: {
         Authorization: process.env.API_KEY || '',
