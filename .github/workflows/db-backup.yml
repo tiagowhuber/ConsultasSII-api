@@ -32,7 +32,7 @@ jobs:
       - name: Dump database
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pg_dump "$DATABASE_URL" -Fc -f /tmp/dump.pgdump
+        run: /usr/lib/postgresql/17/bin/pg_dump "$DATABASE_URL" -Fc -f /tmp/dump.pgdump
 
       - name: Import GPG public key
         env:
